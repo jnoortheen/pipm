@@ -1,13 +1,6 @@
-import os
-
-import posixpath
-
-from datetime import datetime
-from fabric.api import cd, env, run, sudo, task, get
-from fabric.context_managers import settings
-from fabric.contrib import django
-from fabric.contrib.files import exists
+from fabric.api import task
 from fabric.operations import local
+
 import pipm
 
 
