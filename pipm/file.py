@@ -19,9 +19,18 @@ def append_last_line(filename):
         f.seek(0)
         if f.read(1) == b'' and f.read() == b'':
             return
-        f.seek(-2, os.SEEK_END)
-        if f.read(1) != b'\n':
-            f.write(b'\n')
+        try:
+            f.seek(-2, os.SEEK_END)
+            if f.read(1) != b'\n':
+                f.write(b'\n')
+        except OSError:
+            f.seek(0)
+            ls = f.readlines()
+            if ls:
+                last_line = ls[-1]
+                if b'\n' not in last_line:
+                    f.seek(0, os.SEEK_END)
+                    f.write(b'\n')
 
 
 def get_env_requirement_file(*paths, **kwargs):

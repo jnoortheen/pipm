@@ -8,7 +8,6 @@ import pip
 import pip.utils
 import pip.basecommand
 import pip.operations.freeze
-from pip.commands import InstallCommand
 
 # patch for program name
 from pipm.commands import InstallCommandPlus

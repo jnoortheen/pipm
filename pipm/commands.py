@@ -70,40 +70,15 @@ class InstallCommandPlus(InstallCommand):
                  " `requirements/prod.txt`"
         )
 
-    def run(self, options, args):
+    def _save_requirements(self, filename, *reqs):
         """
-            wrapper around pip.commands.InstallCommand
+            save installed requirements to file
         Args:
-            options:
-            args:
-
-        Returns:
-            pip.req.RequirementSet:
-
-        >>> cmd = InstallCommandPlus()
-        >>> opts, args = cmd.parse_args(['pyreqs', '--dev'])
-        >>> reqs = cmd.run(opts, args)
-        >>> import os
-        >>> fname = get_requirements_filename(opts.req_environment)
-        >>> os.path.exists(fname)
-        True
-        >>> with open(fname) as f: reqs = f.readlines()
-        >>> set([i.strip().split('==')[0] for i in reqs]) == {'click', 'pyreqs', 'sh'}
-        True
-        >>> ucmd = UninstallCommand()
-        >>> opts, args = ucmd.parse_args([i.strip().split('==')[0] for i in reqs] + ['-y'])
-        >>> reqs = ucmd.run(opts, args)
-        >>> os.remove(fname)
+            filename:
+            *reqs (tuple(InstallRequirement)):
         """
-        filename = get_requirements_filename(options.req_environment)
-
-        if not args:
-            args = ['-r', filename]
-            options, args = self.parse_args(args)
-        reqs = super(InstallCommandPlus, self).run(options, args)
-        # consider appending to requirements.txt only when
-        if not options.requirements and reqs:
-            for req in reqs.successfully_installed:  # type: InstallRequirement
+        with open(filename, 'ab+') as f:
+            for req in reqs:  # type: InstallRequirement
                 if not req.req.specifier:
                     if req.specifier:
                         req.req.specifier = req.specifier
@@ -122,7 +97,36 @@ class InstallCommandPlus(InstallCommand):
                 except Exception:
                     frozenrequirement = pip.FrozenRequirement(req.name, req.req, req.editable)
 
-                with open(filename, 'ab+') as f:
-                    f.write((str(frozenrequirement).strip() + '\n').encode('utf-8'))
+                f.write((str(frozenrequirement).strip() + '\n').encode('utf-8'))
+
+    def parse_args(self, args):
+        """
+            when no argument given it fills with `-r requirements.txt` as default
+        Args:
+            args (list):
+
+        Returns:
+            options, list:
+        """
+        if not args:
+            args = ['-r', get_requirements_filename(), ]
+        return super(InstallCommandPlus, self).parse_args(args)
+
+    def run(self, options, args):
+        """
+            wrapper around pip.commands.InstallCommand
+        Args:
+            options:
+            args:
+
+        Returns:
+            pip.req.RequirementSet:
+        """
+
+        reqs = super(InstallCommandPlus, self).run(options, args)
+
+        # consider appending to requirements.txt only when
+        if not options.requirements and reqs:
+            self._save_requirements(get_requirements_filename(options.req_environment), *reqs.successfully_installed)
 
         return reqs
