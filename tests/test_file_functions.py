@@ -1,11 +1,6 @@
 import os
-
-import py
-import pytest
 import codecs
-
 from py._path.local import LocalPath
-
 from pipm import file
 
 reqs = """\
