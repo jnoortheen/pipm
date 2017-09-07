@@ -123,7 +123,16 @@ def get_requirements_filename(env=''):
     return fname
 
 
-def read_requirements(env=''):
+def parse_requirements(env=''):
+    """
+        parse requirements file. This retains comments from the file and the exact content of them. So that they can
+        be written back without much distortion in the content
+    Args:
+        env:
+
+    Returns:
+
+    """
     filename = get_requirements_filename(env)
     # with open(filename, 'rb+') as f:
     #     f.write((str(frozenrequirement).strip() + '\n').encode('utf-8'))

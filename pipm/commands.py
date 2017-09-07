@@ -78,24 +78,24 @@ class InstallCommandPlus(InstallCommand):
             *reqs (tuple(InstallRequirement)):
         """
         with open(filename, 'ab+') as f:
-            for req in reqs:  # type: InstallRequirement
-                if not req.req.specifier:
-                    if req.specifier:
-                        req.req.specifier = req.specifier
-                    elif req.installed_version:
-                        req.req.specifier = SpecifierSet('==' + req.installed_version)
-                if not req.req.extras and req.extras:
-                    req.req.extras = req.extras
-                if not req.req.marker and req.markers:
-                    req.req.marker = req.markers
+            for installrequirement in reqs:  # type: InstallRequirement
+                if not installrequirement.req.specifier:
+                    if installrequirement.specifier:
+                        installrequirement.req.specifier = installrequirement.specifier
+                    elif installrequirement.installed_version:
+                        installrequirement.req.specifier = SpecifierSet('==' + installrequirement.installed_version)
+                if not installrequirement.req.extras and installrequirement.extras:
+                    installrequirement.req.extras = installrequirement.extras
+                if not installrequirement.req.marker and installrequirement.markers:
+                    installrequirement.req.marker = installrequirement.markers
                 # if not req.req.url and req.link:
                 #     req.req.url = req.link if isinstance(req.link, str) else req.link.url
 
                 # add these lines to requirements.txt
                 try:
-                    frozenrequirement = pip.FrozenRequirement.from_dist(req.get_dist(), [])
+                    frozenrequirement = pip.FrozenRequirement.from_dist(installrequirement.get_dist(), [])
                 except Exception:
-                    frozenrequirement = pip.FrozenRequirement(req.name, req.req, req.editable)
+                    frozenrequirement = pip.FrozenRequirement(installrequirement.name, installrequirement.req, installrequirement.editable)
 
                 f.write((str(frozenrequirement).strip() + '\n').encode('utf-8'))
 
