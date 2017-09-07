@@ -32,18 +32,19 @@ def _new_line(filename):
                     f.write(b'\n')
 
 
-def get_env_reqfile(*paths, **kwargs):
+def get_env_reqfile(*paths, base_file_name=''):
     """
         from the list of paths return the one that exists. If it doesn't exists then create with appropriate
         starter line
     Args:
+        env:
+        base_file_name:
         *paths:
 
     Returns:
         str:
     """
     for path in paths:
-        print(path, os.path.exists(path))
         if os.path.exists(path):
             return path
 
@@ -58,10 +59,9 @@ def get_env_reqfile(*paths, **kwargs):
 
     if not os.path.exists(filename):
         with open(filename, 'wb') as f:
-            if kwargs.get('env') != '':
-                basename = get_requirements_filename()
-                if filename != basename:
-                    f.write('-r {}'.format('base.txt' if 'base' in basename else basename).encode('utf-8'))
+            if base_file_name:
+                if filename != base_file_name:
+                    f.write('-r {}'.format('base.txt' if 'base' in base_file_name else base_file_name).encode('utf-8'))
 
     return filename
 
@@ -89,7 +89,7 @@ def get_patterns(*envs):
     return patterns
 
 
-def get_requirements_filename(env=''):
+def get_req_filename(env=''):
     """
 
     Args:
@@ -100,20 +100,17 @@ def get_requirements_filename(env=''):
 
     Returns:
         str:
-    >>> f = get_requirements_filename('dev')
-    >>> f
-    'dev-requirements.txt'
-    >>> os.remove(f)
-    >>> f = get_requirements_filename()
-    >>> f
-    'requirements.txt'
-    >>> os.remove(f)
     """
+    BASE_PTRN = ('base',)
+    DEV_PTRN = ('dev', 'development',)
+    TEST_PTRN = ('test',)
+    PROD_PTRN = ('prod', 'production',)
 
-    envs = ('dev', 'development',) if env == 'dev' else ('prod', 'production',) if env == 'prod' else (
-        'test',) if env == 'test' else (env,) if env else ('base',)
+    envs = DEV_PTRN if env == 'dev' else PROD_PTRN if env == 'prod' else TEST_PTRN if env == 'test' else (
+        env,) if env else BASE_PTRN
     paths = get_patterns(*envs)
-    fname = get_env_reqfile(*paths, env=env)
+
+    fname = get_env_reqfile(*paths, base_file_name='' if not env else get_env_reqfile(*get_patterns(*BASE_PTRN)))
     _new_line(fname)
     return fname
 
@@ -129,6 +126,6 @@ def parse(env=''):
 
     """
     reqs = OrderedDict()
-    for req in parse_requirements(get_requirements_filename(env), session=PipSession()):
+    for req in parse_requirements(get_req_filename(env), session=PipSession()):
         reqs[req.name] = req
     return reqs

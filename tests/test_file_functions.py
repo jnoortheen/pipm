@@ -28,6 +28,7 @@ dev_reqs = """\
 some_content==0.1.0 # with inline comment you need to write this back
 """
 
+
 def test_append_last_line(tmpdir):
     p = tmpdir.mkdir("sub").join("hello.txt")
     p.write("content")
@@ -36,7 +37,7 @@ def test_append_last_line(tmpdir):
 
 
 def test_get_env_reqfile_case1(tmpdir):
-    p = tmpdir.mkdir("sub").join("hello.txt") # type: LocalPath
+    p = tmpdir.mkdir("sub").join("hello.txt")  # type: LocalPath
     p.write('content')
     paths = ['_estins.txt', p.strpath]
 
@@ -48,14 +49,39 @@ def test_get_env_reqfile_case1(tmpdir):
 def test_get_env_reqfile_case2():
     # case 2: creates file
     fname = 'some-requirements.txt'
-    assert fname == file.get_env_reqfile(fname)
+    assert fname == file.get_env_reqfile(fname, base_file_name='requirements/base.txt', )
+    with open(fname) as f:
+        cnt = f.read()
+        assert cnt == '-r base.txt'
+    assert os.path.exists(fname)
     os.remove(fname)
 
 
-def test_parse():
-    fname = file.get_requirements_filename()
+def test_get_req_filename(tmpdir):
+    """
+
+    Args:
+        tmpdir (LocalPath): fixture
+
+    """
+    os.chdir(tmpdir.strpath)
+    assert file.get_req_filename('dev') == 'dev-requirements.txt'
+    assert file.get_req_filename() == 'requirements.txt'
+
+
+def test_parse(tmpdir):
+    os.chdir(tmpdir.strpath)
+    fname = file.get_req_filename()
     with codecs.open(fname, 'w', 'utf-8') as f:
         f.write(reqs)
+
+    # single file parsing
     install_reqs = file.parse()
-    print(install_reqs)
-    os.remove(fname)
+    assert len(install_reqs) == 4
+
+    # nested file parsing
+    fname = file.get_req_filename('dev')
+    with codecs.open(fname, 'w', 'utf-8') as f:
+        f.write(dev_reqs)
+    install_reqs = file.parse('dev')
+    assert len(install_reqs) == 5

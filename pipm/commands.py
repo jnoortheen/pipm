@@ -2,7 +2,7 @@ from pkg_resources._vendor.packaging.specifiers import SpecifierSet
 from pip.req import InstallRequirement
 from pip.commands import InstallCommand, UninstallCommand
 import pip
-from pipm.file import get_requirements_filename
+from pipm.file import get_req_filename
 
 
 def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
@@ -109,7 +109,7 @@ class InstallCommandPlus(InstallCommand):
             options, list:
         """
         if not args:
-            args = ['-r', get_requirements_filename(), ]
+            args = ['-r', get_req_filename(), ]
         return super(InstallCommandPlus, self).parse_args(args)
 
     def run(self, options, args):
@@ -127,6 +127,6 @@ class InstallCommandPlus(InstallCommand):
 
         # consider appending to requirements.txt only when
         if not options.requirements and reqs:
-            self._save_requirements(get_requirements_filename(options.req_environment), *reqs.successfully_installed)
+            self._save_requirements(get_req_filename(options.req_environment), *reqs.successfully_installed)
 
         return reqs
