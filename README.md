@@ -31,3 +31,8 @@ pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm
         1. `--env <name>` - if you have any special set of requirements that belong to a separate file you could pass the name here.
         It will search for the matching one in the following pattern `<name>-requirements.txt` or 
         `requirements/<name>.txt` or `requirements-<name>.txt`
+
+
+# Testing
+
+- After installing test-requirements.txt just run `pytest` from the root directory after cloning it.
