@@ -32,7 +32,12 @@ pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm
         It will search for the matching one in the following pattern `<name>-requirements.txt` or 
         `requirements/<name>.txt` or `requirements-<name>.txt`
 
+# Features
 
+1. handles complex `requirements` files
+1. Just a wrapper around the standard pip's `install` & `uninstall` command. So all the cli options will work
+1. Handles multiple `requirements` files
+ 
 # Testing
 
 - After installing test-requirements.txt just run `pytest` from the root directory after cloning it.
