@@ -1,18 +1,17 @@
 import os
 
 import errno
+from collections import OrderedDict
+
+from pip.download import PipSession
+from pip.req.req_file import parse_requirements
 
 
-def append_last_line(filename):
+def _new_line(filename):
     """
-        create an empty line if one doesn't exist
+        append `\n` to the end of the file if it doesn't exist
     Args:
         filename:
-    >>> f = get_requirements_filename('dev')
-    >>> with open(f) as fl: fl.read().strip()
-    '-r requirements.txt'
-    >>> os.remove(f)
-    >>> os.remove('requirements.txt')
     """
     with open(filename, 'ab+') as f:
         # check for empty file
@@ -33,22 +32,18 @@ def append_last_line(filename):
                     f.write(b'\n')
 
 
-def get_env_requirement_file(*paths, **kwargs):
+def get_env_reqfile(*paths, **kwargs):
     """
-
+        from the list of paths return the one that exists. If it doesn't exists then create with appropriate
+        starter line
     Args:
         *paths:
 
     Returns:
-
-    >>> get_env_requirement_file('requirements/dev.txt')
-    'requirements/dev.txt'
-    >>> os.path.exists('requirements/dev.txt')
-    True
-    >>> os.remove('requirements/dev.txt')
-    >>> os.rmdir('requirements')
+        str:
     """
     for path in paths:
+        print(path, os.path.exists(path))
         if os.path.exists(path):
             return path
 
@@ -118,21 +113,22 @@ def get_requirements_filename(env=''):
     envs = ('dev', 'development',) if env == 'dev' else ('prod', 'production',) if env == 'prod' else (
         'test',) if env == 'test' else (env,) if env else ('base',)
     paths = get_patterns(*envs)
-    fname = get_env_requirement_file(*paths, env=env)
-    append_last_line(fname)
+    fname = get_env_reqfile(*paths, env=env)
+    _new_line(fname)
     return fname
 
 
-def parse_requirements(env=''):
+def parse(env=''):
     """
         parse requirements file. This retains comments from the file and the exact content of them. So that they can
-        be written back without much distortion in the content
+        be written back without much distortion in the content.
     Args:
         env:
 
     Returns:
 
     """
-    filename = get_requirements_filename(env)
-    # with open(filename, 'rb+') as f:
-    #     f.write((str(frozenrequirement).strip() + '\n').encode('utf-8'))
+    reqs = OrderedDict()
+    for req in parse_requirements(get_requirements_filename(env), session=PipSession()):
+        reqs[req.name] = req
+    return reqs
