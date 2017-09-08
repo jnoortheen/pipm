@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 from pkg_resources._vendor.packaging.specifiers import SpecifierSet
 from pip.req import InstallRequirement
 from pip.commands import InstallCommand, UninstallCommand
 import pip
-from pipm.file import get_req_filename
+from . import file
 
 
 def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
@@ -30,6 +31,8 @@ class InstallCommandPlus(InstallCommand):
         >>> opts, args = cmd.parse_args(['pkg_name', '--env', 'staging'])
         >>> opts.req_environment
         'staging'
+        >>> opts, args = cmd.parse_args([])
+        >>> opts.req_environment
         """
         super(InstallCommandPlus, self).__init__(*args, **kw)
 
@@ -70,35 +73,26 @@ class InstallCommandPlus(InstallCommand):
                  " `requirements/prod.txt`"
         )
 
-    def _save_requirements(self, filename, *reqs):
+    def _save_requirements(self, env, *reqs):
         """
             save installed requirements to file
         Args:
-            filename:
+            env: one of div/test/custom or empty
             *reqs (tuple(InstallRequirement)):
         """
-        with open(filename, 'ab+') as f:
-            for installrequirement in reqs:  # type: InstallRequirement
-                if not installrequirement.req.specifier:
-                    if installrequirement.specifier:
-                        installrequirement.req.specifier = installrequirement.specifier
-                    elif installrequirement.installed_version:
-                        installrequirement.req.specifier = SpecifierSet('==' + installrequirement.installed_version)
-                if not installrequirement.req.extras and installrequirement.extras:
-                    installrequirement.req.extras = installrequirement.extras
-                if not installrequirement.req.marker and installrequirement.markers:
-                    installrequirement.req.marker = installrequirement.markers
+        for installrequirement in reqs:  # type: InstallRequirement
+            if not installrequirement.req.specifier:
+                if installrequirement.specifier:
+                    installrequirement.req.specifier = installrequirement.specifier
+                elif installrequirement.installed_version:
+                    installrequirement.req.specifier = SpecifierSet('==' + installrequirement.installed_version)
+            if not installrequirement.req.extras and installrequirement.extras:
+                installrequirement.req.extras = installrequirement.extras
+            if not installrequirement.req.marker and installrequirement.markers:
+                installrequirement.req.marker = installrequirement.markers
                 # if not req.req.url and req.link:
                 #     req.req.url = req.link if isinstance(req.link, str) else req.link.url
-
-                # add these lines to requirements.txt
-                try:
-                    frozenrequirement = pip.FrozenRequirement.from_dist(installrequirement.get_dist(), [])
-                except Exception:
-                    frozenrequirement = pip.FrozenRequirement(installrequirement.name, installrequirement.req, installrequirement.editable)
-
-                f.write((str(frozenrequirement).strip() + '\n').encode('utf-8'))
-
+        file.save(reqs, env)
     def parse_args(self, args):
         """
             when no argument given it fills with `-r requirements.txt` as default
@@ -109,7 +103,7 @@ class InstallCommandPlus(InstallCommand):
             options, list:
         """
         if not args:
-            args = ['-r', get_req_filename(), ]
+            args = ['-r', file.get_req_filename(), ]
         return super(InstallCommandPlus, self).parse_args(args)
 
     def run(self, options, args):
@@ -127,6 +121,6 @@ class InstallCommandPlus(InstallCommand):
 
         # consider appending to requirements.txt only when
         if not options.requirements and reqs:
-            self._save_requirements(get_req_filename(options.req_environment), *reqs.successfully_installed)
+            self._save_requirements(options.req_environment, *reqs.successfully_installed, )
 
         return reqs
