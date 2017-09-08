@@ -2,7 +2,6 @@ import codecs
 import os
 
 from py._path.local import LocalPath
-import pytest
 
 from pipm import file
 
@@ -104,8 +103,6 @@ def test_uniq_reqs(chdir):
     with codecs.open(fname, 'w', 'utf-8') as f:
         f.write(REQS_STR)
     install_reqs = file.parse()
-    for r in install_reqs:
-        print(r.name)
     ireqs = install_reqs + install_reqs
     ireqs = file._uniq_resources(ireqs)
     assert len(ireqs) == 5

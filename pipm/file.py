@@ -205,13 +205,14 @@ def save(reqs, env=''):
         lines_enum = req_file.join_lines(lines_enum)
         lines = OrderedDict(lines_enum)
         filename = get_req_filename(env)
-        for req in file_reqs[filename]:
+        for req_name in file_reqs[filename]:
+            req = file_reqs[filename][req_name]
             try:
                 frozenrequirement = FrozenRequirement.from_dist(req.get_dist(), [])
             except Exception:
                 frozenrequirement = FrozenRequirement(req.name, req.req, req.editable)
 
-            _line_num = req.line_num if req.line_num and req.line_num in lines else max(lines.keys())
+            _line_num = req.line_num if req.line_num and req.line_num in lines else max(lines.keys()) + 1
             lines[_line_num] = str(frozenrequirement).strip()
 
         with open(filename, 'wb') as f:
