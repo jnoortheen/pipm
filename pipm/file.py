@@ -3,8 +3,10 @@ import os
 import errno
 from collections import OrderedDict
 
-from pip.download import PipSession
-from pip.req.req_file import parse_requirements
+from pip import FrozenRequirement
+from pip.download import PipSession, get_file_content
+from pip.req import req_file
+from pip.req.req_install import InstallRequirement
 
 
 def _new_line(filename):
@@ -125,7 +127,92 @@ def parse(env=''):
     Returns:
 
     """
-    reqs = OrderedDict()
-    for req in parse_requirements(get_req_filename(env), session=PipSession()):
-        reqs[req.name] = req
-    return reqs
+    return list(req_file.parse_requirements(get_req_filename(env), session=PipSession()))
+
+
+def parse_comes_from(comes_from, env):
+    """
+        parse comesfrom if valid otherwise return the filename for the environment
+    Args:
+        comes_from ([str]):
+        env (str):
+
+    Returns:
+        str, int: filename and line number
+    """
+    if comes_from:
+        comes_from = comes_from.split()
+        return comes_from[1], int(comes_from[3].strip(')'))
+    filename = get_req_filename(env)
+    return filename, None
+
+
+def _uniq_resources(reqs):
+    """
+
+    Args:
+        reqs list[InstallRequirement]:
+
+    Returns:
+        OrderedDict:
+    """
+    uniq_reqs = OrderedDict()
+    for req in reqs:
+        if req.name in uniq_reqs:
+            old_req = uniq_reqs[req.name]
+            if not req.comes_from and old_req.comes_from:
+                req.comes_from = old_req.comes_from
+        uniq_reqs[req.name] = req
+    return uniq_reqs
+
+
+def _cluster_to_file_reqs(reqs, env):
+    """
+
+    Args:
+        reqs (OrderedDict):
+
+    Returns:
+        OrderedDict:
+    """
+    filereqs = OrderedDict()
+    for req_name in reqs:
+        req = reqs[req_name]  # type: InstallRequirement
+        filename, line_num = parse_comes_from(req.comes_from, env)
+
+        if filename not in filereqs:
+            filereqs[filename] = OrderedDict()
+
+        req.filename = filename
+        req.line_num = line_num
+
+        filereqs[filename][req_name] = req
+    return filereqs
+
+
+def save(reqs, env=''):
+    """
+    save requirements to the files while retain the original as much as possible including comments, etc.,
+    """
+    uniq_reqs = _uniq_resources(reqs)
+    file_reqs = _cluster_to_file_reqs(uniq_reqs, env)
+    # first step process the requirements and split them into separate for each of the file
+    for filename in file_reqs:  # type: str
+        _, content = get_file_content(
+            filename, session=PipSession()
+        )
+        lines_enum = enumerate(content.splitlines(), start=1)
+        lines_enum = req_file.join_lines(lines_enum)
+        lines = OrderedDict(lines_enum)
+        filename = get_req_filename(env)
+        for req in file_reqs[filename]:
+            try:
+                frozenrequirement = FrozenRequirement.from_dist(req.get_dist(), [])
+            except Exception:
+                frozenrequirement = FrozenRequirement(req.name, req.req, req.editable)
+
+            _line_num = req.line_num if req.line_num and req.line_num in lines else max(lines.keys())
+            lines[_line_num] = str(frozenrequirement).strip()
+
+        with open(filename, 'wb') as f:
+            f.write("\n".join(lines.values()).encode('utf-8'))
