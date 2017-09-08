@@ -7,14 +7,13 @@ from pipm.file import get_req_filename
 from pip.req.req_install import InstallRequirement
 
 
-def test_fill_args_when_no_args_given(tmpdir):
+def test_fill_args_when_no_args_given(chdir):
     """
 
     Args:
         tmpdir (LocalPath): fixture
 
     """
-    os.chdir(tmpdir.strpath)
     f = get_req_filename()
     cmd = InstallCommandPlus()
     opts, args = cmd.parse_args([])

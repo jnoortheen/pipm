@@ -27,13 +27,6 @@ some_content==0.1.0 # with inline comment you need to write this back
 """
 
 
-@pytest.fixture
-def chdir(tmpdir_factory):
-    tmpdir = tmpdir_factory.mktemp('test')
-    os.chdir(tmpdir.strpath)
-    return tmpdir
-
-
 def test_append_last_line(tmpdir):
     p = tmpdir.mkdir("sub").join("hello.txt")
     p.write("content")
