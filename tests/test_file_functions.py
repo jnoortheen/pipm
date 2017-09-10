@@ -93,9 +93,11 @@ def test_parse_comes_from(chdir):
     assert fname == forig
     assert line == 11
 
+
+def test_parse_comes_from_case_nofile(chdir):
     fname, line = file.parse_comes_from(None, 'dev')
     assert fname == file.get_req_filename('dev')
-    assert line == None
+    assert line is None
 
 
 def test_uniq_reqs(chdir):

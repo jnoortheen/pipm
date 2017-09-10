@@ -5,4 +5,4 @@ import sys
 import pipm
 
 if __name__ == '__main__':
-    sys.exit(pipm.pip.main())
+    sys.exit(pipm.main())
