@@ -5,6 +5,8 @@ import pip
 from pip.utils import get_installed_distributions
 from pip.utils import pkg_resources
 from pkg_resources import RequirementParseError, DistInfoDistribution
+from pip.compat import stdlib_pkgs
+from pip.commands.freeze import DEV_PKGS
 
 logger = logging.getLogger(__name__)
 try:
@@ -19,6 +21,7 @@ def get_frozen_reqs(find_links=None, local_only=None, user_only=None, ):
     find_links = find_links or []
 
     dependency_links = []
+    skip = stdlib_pkgs + DEV_PKGS
 
     reload(pkg_resources)
 
@@ -46,7 +49,8 @@ def get_frozen_reqs(find_links=None, local_only=None, user_only=None, ):
                 dist.project_name
             )
             continue
-        installations[req.name] = req
+        if req.name not in skip:
+            installations[req.name] = req
     return installations
 
 

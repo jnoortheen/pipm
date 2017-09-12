@@ -14,7 +14,7 @@ click==6.7
 uncompyle6==2.11.5
 Fabric3==1.13.1.post1
 xdis==3.5.5
-wheel==0.29.0
+wheel==0.30.0
 PyNaCl==1.1.2
 invoke==0.20.4
 pip==9.0.1

@@ -1,6 +1,7 @@
 # pipm
 
-Python package management workflow using pip & requirements file as its metadata
+Python package management workflow using pip & requirements file as its metadata. (For the time being until `Pipfile` 
+is mature enough or the `pipenv` is fast enough to use.)
 
 # Installation
 
@@ -46,10 +47,11 @@ pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm
     
 # Features
 
-1. handles complex `requirements` files
 1. Just a wrapper around the standard pip's `install` & `uninstall` command. So all the cli options will work
 1. Handles multiple `requirements` files
  
 # Testing
 
 - After installing `requirements` just run `fab test` from the root directory.
+
+``Note``: last tested with pip 9.0.1

@@ -20,4 +20,4 @@ def test_get_distributions(monkeypatch):
 
 def test_get_frozen_reqs():
     freqs = operations.get_frozen_reqs()
-    assert len(freqs) == 25
+    assert len(freqs) == 22
