@@ -108,3 +108,18 @@ def test_uniq_reqs(chdir):
     ireqs = install_reqs + install_reqs
     ireqs = file._uniq_resources(ireqs)
     assert len(ireqs) == 5
+
+
+def test_get_requirement_files(tmpdir):
+    reqf = tmpdir.mkdir('reqf')
+    os.chdir(reqf.strpath)
+    os.mkdir('requirements')
+    base_fname = os.path.join('requirements', 'base.txt')
+    open(base_fname, 'wb').close()
+    file.get_req_filename('dev')
+    file.get_req_filename('test')
+    assert file.get_req_filenames() == {
+        'requirements/development.txt',
+        'requirements/base.txt',
+        'requirements/test.txt',
+    }
