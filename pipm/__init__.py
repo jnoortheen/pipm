@@ -1,14 +1,12 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = '0.3'
-
-import sys
+__version__ = '0.4'
 
 import pip
-import pip.utils
 import pip.basecommand
 import pip.operations.freeze
+import pip.utils
 
 # patch for program name
 from pipm.commands import InstallCommandPlus, UninstallCommandPlus, UpdateCommand

@@ -260,7 +260,7 @@ def save(env='', session=None):
     env_filename = get_req_filename(env)
     uniq_reqs = _uniq_resources(reqs)
     file_reqs = _cluster_to_file_reqs(reqs, env)
-    installations = operations.get_installations()
+    installations = operations.get_frozen_reqs()
     installed, removed = get_installed_removed(installations, uniq_reqs)
 
     # first step process the requirements and split them into separate for each of the file

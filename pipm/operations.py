@@ -15,7 +15,7 @@ except ImportError:
     from imp import reload
 
 
-def get_installations(find_links=None, local_only=None, user_only=None, ):
+def get_frozen_reqs(find_links=None, local_only=None, user_only=None, ):
     find_links = find_links or []
 
     dependency_links = []
@@ -48,3 +48,9 @@ def get_installations(find_links=None, local_only=None, user_only=None, ):
             continue
         installations[req.name] = req
     return installations
+
+
+def get_distributions():
+    reload(pkg_resources)
+
+    return {dist.project_name.lower(): dist for dist in get_installed_distributions()}

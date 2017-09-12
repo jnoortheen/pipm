@@ -1,6 +1,11 @@
 from __future__ import absolute_import
+
+from pip import FrozenRequirement
 from pip.commands import InstallCommand, UninstallCommand
+from pkg_resources import DistInfoDistribution
+
 from . import file
+from pipm.operations import get_frozen_reqs, get_distributions
 
 
 def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
@@ -89,7 +94,8 @@ class InstallCommandPlus(InstallCommand):
         """
         options, args = super(InstallCommandPlus, self).parse_args(args)
         if not options.requirements and not args:
-            options, args = super(InstallCommandPlus, self).parse_args(['-r', file.get_req_filename(options.req_environment)])
+            options, args = super(InstallCommandPlus, self).parse_args(
+                ['-r', file.get_req_filename(options.req_environment)])
         return options, args
 
     def run(self, options, args):
@@ -117,7 +123,27 @@ class UninstallCommandPlus(UninstallCommand):
     """
 
     def run(self, options, args):
-        super(UninstallCommandPlus, self).run(options, args)
+        orig_args = args[:]
+        dists = get_distributions()
+        removed_packages = []
+        for pkg in orig_args:  # type: str
+            removed_packages.append(dists.pop(pkg.lower()))
+
+        orphaned_pkgs = set()
+        for dist in removed_packages:  # type: DistInfoDistribution
+            for r in dist.requires():
+                orphaned_pkgs.add(r.name)
+
+        all_requires = set()
+        for dist in dists:
+            for r in dists[dist].requires():
+                all_requires.add(r.name)
+
+        removable_pkgs = orphaned_pkgs.difference(all_requires)
+        if removable_pkgs:
+            print('Following packages are auto-installed and no longer required: \n', '\n'.join(removable_pkgs))
+            super(UninstallCommandPlus, self).run(options, ((args or []) + list(removable_pkgs)))
+
         file.save()
 
 
