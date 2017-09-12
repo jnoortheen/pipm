@@ -191,7 +191,7 @@ def _uniq_resources(reqs):
     """
 
     Args:
-        reqs list[InstallRequirement]:
+        reqs (list[InstallRequirement]):
 
     Returns:
         OrderedDict:

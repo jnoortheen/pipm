@@ -4,7 +4,7 @@ import logging
 import pip
 from pip.utils import get_installed_distributions
 from pip.utils import pkg_resources
-from pkg_resources import RequirementParseError
+from pkg_resources import RequirementParseError, DistInfoDistribution
 
 logger = logging.getLogger(__name__)
 try:
@@ -54,3 +54,31 @@ def get_distributions():
     reload(pkg_resources)
 
     return {dist.project_name.lower(): dist for dist in get_installed_distributions()}
+
+
+def get_orphaned_packages(pkgs):
+    """
+        return list of packages that is only required by the pkgs given but not other installed packages
+    Args:
+        pkgs (list):
+
+    Returns:
+        list:
+    """
+
+    dists = get_distributions()
+    removed_packages = []
+    for pkg in pkgs:  # type: str
+        removed_packages.append(dists.pop(pkg.lower()))
+
+    orphaned_pkgs = set()
+    for dist in removed_packages:  # type: DistInfoDistribution
+        for r in dist.requires():
+            orphaned_pkgs.add(r.name)
+
+    all_requires = set()
+    for dist in dists:
+        for r in dists[dist].requires():
+            all_requires.add(r.name)
+
+    return list(orphaned_pkgs.difference(all_requires))

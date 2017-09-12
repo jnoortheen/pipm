@@ -1,11 +1,9 @@
 from __future__ import absolute_import
 
-from pip import FrozenRequirement
 from pip.commands import InstallCommand, UninstallCommand
-from pkg_resources import DistInfoDistribution
 
+from pipm.operations import get_orphaned_packages
 from . import file
-from pipm.operations import get_frozen_reqs, get_distributions
 
 
 def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
@@ -59,14 +57,6 @@ class InstallCommandPlus(InstallCommand):
                  " `requirements/prod.txt`"
         )
 
-    def _save_requirements(self, env):
-        """
-            save installed requirements to file
-        Args:
-            env: one of div/test/custom or empty
-        """
-        file.save(env)
-
     def parse_args(self, args):
         """
             when no argument given it fills with `-r requirements.txt` as default
@@ -76,12 +66,14 @@ class InstallCommandPlus(InstallCommand):
         Returns:
             options, list:
         """
-
         options, args = super(InstallCommandPlus, self).parse_args(args)
-        env = options.req_environment
         if not options.requirements and not args:
+            env = options.req_environment
+            upgrade = options.upgrade
+
             options, args = super(InstallCommandPlus, self).parse_args(['-r', file.get_req_filename(env)])
             options.req_environment = env
+            options.upgrade = upgrade
 
         return options, args
 
@@ -95,10 +87,10 @@ class InstallCommandPlus(InstallCommand):
         Returns:
             pip.req.RequirementSet:
         """
-        result = super(InstallCommandPlus, self).run(options, args)
+        result = super(InstallCommandPlus, self).run(options, args, )
 
         if not options.requirements:
-            self._save_requirements(options.req_environment, )
+            file.save(options.req_environment)
 
         return result
 
@@ -110,28 +102,17 @@ class UninstallCommandPlus(UninstallCommand):
     """
 
     def run(self, options, args):
-        orig_args = args[:]
-        dists = get_distributions()
-        removed_packages = []
-        for pkg in orig_args:  # type: str
-            removed_packages.append(dists.pop(pkg.lower()))
+        removable_pkgs = get_orphaned_packages(args)
 
-        orphaned_pkgs = set()
-        for dist in removed_packages:  # type: DistInfoDistribution
-            for r in dist.requires():
-                orphaned_pkgs.add(r.name)
-
-        all_requires = set()
-        for dist in dists:
-            for r in dists[dist].requires():
-                all_requires.add(r.name)
-
-        removable_pkgs = orphaned_pkgs.difference(all_requires)
         if removable_pkgs:
-            print('Following packages are auto-installed and no longer required: \n', '\n'.join(removable_pkgs))
-            super(UninstallCommandPlus, self).run(options, ((args or []) + list(removable_pkgs)))
+            print('Following packages are no longer required by any of the installed packages: \n', '\n'.join(
+                removable_pkgs))
+
+        res = super(UninstallCommandPlus, self).run(options, (args + list(removable_pkgs)))
 
         file.save()
+
+        return res
 
 
 class UpdateCommand(InstallCommandPlus):
@@ -152,5 +133,4 @@ class UpdateCommand(InstallCommandPlus):
         Returns:
             options, list:
         """
-
         return super(UpdateCommand, self).parse_args(args + ['--upgrade'])

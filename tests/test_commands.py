@@ -1,4 +1,4 @@
-from pipm import InstallCommandPlus
+from pipm import InstallCommandPlus, UpdateCommand
 from pipm.file import get_req_filename
 from pip.req.req_install import InstallRequirement
 
@@ -56,3 +56,9 @@ def test_req_environment():
     assert opts.req_environment == 'staging'
     opts, args = cmd.parse_args([])
     assert opts.req_environment is None
+
+
+def test_update_command_parse_args():
+    cmd = UpdateCommand()
+    opts, args = cmd.parse_args([])
+    assert opts.upgrade

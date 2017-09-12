@@ -87,6 +87,17 @@ def test_parse_nested(chdir):
     assert len(install_reqs) == 6
 
 
+def test_cluster_file_reqs(chdir):
+    with codecs.open(file.get_req_filename(), 'w', 'utf-8') as f:
+        f.write(REQS_STR)
+    fname = file.get_req_filename('dev')
+    with codecs.open(fname, 'w', 'utf-8') as f:
+        f.write(DEV_REQS_STR)
+    install_reqs = file.parse('dev')
+    file_reqs = file._cluster_to_file_reqs(install_reqs, 'div')
+    assert set(file_reqs.keys()) == {'dev-requirements.txt', 'requirements.txt'}
+
+
 def test_parse_comes_from(chdir):
     forig = 'tests/fixtures/requirements.txt'
     fname, line = file.parse_comes_from('-r {} (line 11)'.format(forig), 'dev')
