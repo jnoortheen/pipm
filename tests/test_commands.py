@@ -42,3 +42,17 @@ def test_fill_args_when_no_args_given_environ(chdir):
     cmd = InstallCommandPlus()
     opts, args = cmd.parse_args(['--env', env])
     assert opts.requirements == [f, ]
+
+
+def test_req_environment():
+    cmd = InstallCommandPlus()
+    opts, args = cmd.parse_args(['--dev'])
+    assert opts.req_environment == 'dev'
+    opts, args = cmd.parse_args(['--test'])
+    assert opts.req_environment == 'test'
+    opts, args = cmd.parse_args(['pkg_name', '--prod'])
+    assert opts.req_environment == 'prod'
+    opts, args = cmd.parse_args(['pkg_name', '--env', 'staging'])
+    assert opts.req_environment == 'staging'
+    opts, args = cmd.parse_args([])
+    assert opts.req_environment is None

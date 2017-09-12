@@ -19,22 +19,6 @@ class InstallCommandPlus(InstallCommand):
         Args:
             *args:
             **kw:
-
-        >>> cmd = InstallCommandPlus()
-        >>> opts, args = cmd.parse_args([ '--dev'])
-        >>> opts.req_environment
-        'dev'
-        >>> opts, args = cmd.parse_args([ '--test'])
-        >>> opts.req_environment
-        'test'
-        >>> opts, args = cmd.parse_args(['pkg_name', '--prod'])
-        >>> opts.req_environment
-        'prod'
-        >>> opts, args = cmd.parse_args(['pkg_name', '--env', 'staging'])
-        >>> opts.req_environment
-        'staging'
-        >>> opts, args = cmd.parse_args([])
-        >>> opts.req_environment
         """
         super(InstallCommandPlus, self).__init__(*args, **kw)
 
@@ -92,10 +76,13 @@ class InstallCommandPlus(InstallCommand):
         Returns:
             options, list:
         """
+
         options, args = super(InstallCommandPlus, self).parse_args(args)
+        env = options.req_environment
         if not options.requirements and not args:
-            options, args = super(InstallCommandPlus, self).parse_args(
-                ['-r', file.get_req_filename(options.req_environment)])
+            options, args = super(InstallCommandPlus, self).parse_args(['-r', file.get_req_filename(env)])
+            options.req_environment = env
+
         return options, args
 
     def run(self, options, args):

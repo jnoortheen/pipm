@@ -32,6 +32,18 @@ pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm
         It will search for the matching one in the following pattern `<name>-requirements.txt` or 
         `requirements/<name>.txt` or `requirements-<name>.txt`
 
+1. uninstall 
+    - a wrapper around standard `pip uninstall` command
+    - when uninstalling a package, this command also checks packages that are no longer required by any of the installed
+    packages and removes them
+    - ofcourse it removes the packages from `requirements` files
+
+1. update
+    - new command
+    - equivalent to calling `pip install` with `--upgrade` flag
+    - update a single package or the whole environment when no argument given.
+    
+    
 # Features
 
 1. handles complex `requirements` files
@@ -40,4 +52,4 @@ pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm
  
 # Testing
 
-- After installing test-requirements.txt just run `pytest` from the root directory after cloning it.
+- After installing `requirements` just run `fab test` from the root directory.
