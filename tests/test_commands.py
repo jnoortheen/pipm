@@ -16,6 +16,34 @@ def test_fill_args_when_no_args_given(chdir):
     assert opts.requirements == [f, ]
 
 
+def test_fill_args_when_no_args_given_dev(chdir):
+    """
+
+    Args:
+        tmpdir (LocalPath): fixture
+
+    """
+    for env in ['div', 'test', 'prod']:
+        f = get_req_filename(env)
+        cmd = InstallCommandPlus()
+        opts, args = cmd.parse_args(['--{}'.format(env)])
+        assert opts.requirements == [f, ]
+
+
+def test_fill_args_when_no_args_given_environ(chdir):
+    """
+
+    Args:
+        tmpdir (LocalPath): fixture
+
+    """
+    env = 'staging'
+    f = get_req_filename(env)
+    cmd = InstallCommandPlus()
+    opts, args = cmd.parse_args(['--env {}'.format(env)])
+    assert opts.requirements == [f, ]
+
+
 def test_saves_requirements_to_file(chdir):
     cmd = InstallCommandPlus()
     opts, args = cmd.parse_args(['pyreqs', '--dev'])
