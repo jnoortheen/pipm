@@ -90,9 +90,10 @@ class InstallCommandPlus(InstallCommand):
         Returns:
             options, list:
         """
-        if not args:
-            args = ['-r', file.get_req_filename(), ]
-        return super(InstallCommandPlus, self).parse_args(args)
+        options, args = super(InstallCommandPlus, self).parse_args(args)
+        if not options.requirements and not args:
+            options.requirements = [file.get_req_filename(options.req_environment), ]
+        return options, args
 
     def run(self, options, args):
         """
