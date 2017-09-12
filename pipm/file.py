@@ -257,12 +257,10 @@ def save(env='', session=None):
 
     for file in get_req_filenames(env):
         reqs += list(req_file.parse_requirements(file, session=session))
-
     env_filename = get_req_filename(env)
     uniq_reqs = _uniq_resources(reqs)
     file_reqs = _cluster_to_file_reqs(reqs, env)
     installations = operations.get_installations()
-
     installed, removed = get_installed_removed(installations, uniq_reqs)
 
     # first step process the requirements and split them into separate for each of the file
@@ -273,18 +271,24 @@ def save(env='', session=None):
         joined_lines = req_file.join_lines(orig_lines)
         lines = OrderedDict(joined_lines)
 
-        # updates
+        # 1. save new requirements
+        if filename == env_filename:
+            for new_req in installed:
+                line_num = len(lines) + 1
+                lines[line_num] = str(installations[new_req]).strip()
+
         for req in file_reqs[filename]:
             frozenrequirement = installations.get(req.name)
             if frozenrequirement:
+                # 2. updates
                 lines[req.line_num] = str(frozenrequirement).strip()
             else:
+                # 3. removals
                 lines.pop(req.line_num)
 
-        # save new requirements
-        if filename == env_filename:
-            line_num = max(lines.keys()) if lines.keys() else 1
-            for new_req in installed:
-                lines[line_num] = str(installations[new_req]).strip()
+        # 4. finally write to file
         with open(filename, 'wb') as f:
-            f.write(("\n".join(lines.values()) + '\n').encode('utf-8'))
+            for line in lines:
+                cnt = lines[line].strip()
+                if cnt:
+                    f.write((cnt + '\n').encode('utf-8'))

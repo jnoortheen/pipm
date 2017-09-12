@@ -1,8 +1,5 @@
 from __future__ import absolute_import
-from pkg_resources._vendor.packaging.specifiers import SpecifierSet
-from pip.req import InstallRequirement
 from pip.commands import InstallCommand, UninstallCommand
-import pip
 from . import file
 
 
@@ -121,5 +118,4 @@ class UninstallCommandPlus(UninstallCommand):
 
     def run(self, options, args):
         super(UninstallCommandPlus, self).run(options, args)
-
-        file.remove()
+        file.save()
