@@ -73,26 +73,14 @@ class InstallCommandPlus(InstallCommand):
                  " `requirements/prod.txt`"
         )
 
-    def _save_requirements(self, env, *reqs):
+    def _save_requirements(self, env):
         """
             save installed requirements to file
         Args:
             env: one of div/test/custom or empty
-            *reqs (tuple(InstallRequirement)):
         """
-        for installrequirement in reqs:  # type: InstallRequirement
-            if not installrequirement.req.specifier:
-                if installrequirement.specifier:
-                    installrequirement.req.specifier = installrequirement.specifier
-                elif installrequirement.installed_version:
-                    installrequirement.req.specifier = SpecifierSet('==' + installrequirement.installed_version)
-            if not installrequirement.req.extras and installrequirement.extras:
-                installrequirement.req.extras = installrequirement.extras
-            if not installrequirement.req.marker and installrequirement.markers:
-                installrequirement.req.marker = installrequirement.markers
-                # if not req.req.url and req.link:
-                #     req.req.url = req.link if isinstance(req.link, str) else req.link.url
-        file.save(reqs, env)
+        file.save(env)
+
     def parse_args(self, args):
         """
             when no argument given it fills with `-r requirements.txt` as default
@@ -116,11 +104,21 @@ class InstallCommandPlus(InstallCommand):
         Returns:
             pip.req.RequirementSet:
         """
+        result = super(InstallCommandPlus, self).run(options, args)
 
-        reqs = super(InstallCommandPlus, self).run(options, args)
+        if not options.requirements:
+            self._save_requirements(options.req_environment, )
 
-        # consider appending to requirements.txt only when
-        if not options.requirements and reqs:
-            self._save_requirements(options.req_environment, *reqs.successfully_installed, )
+        return result
 
-        return reqs
+
+class UninstallCommandPlus(UninstallCommand):
+    """
+        a drop-in replacement of pip's uninstall command. It removes the entry from requirements file after a package
+        is removed.
+    """
+
+    def run(self, options, args):
+        super(UninstallCommandPlus, self).run(options, args)
+
+        file.remove()

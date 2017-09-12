@@ -1,6 +1,6 @@
 -r requirements.txt
-py>=1.4.33
+py==1.4.34
 pytest==3.2.1
-
-termcolor>=1.1.0
+termcolor==1.1.0
 pytest-sugar==0.9.0
+pytest-cov==2.5.1

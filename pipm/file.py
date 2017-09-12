@@ -1,12 +1,17 @@
-import os
+from __future__ import absolute_import
 
 import errno
+import logging
+import os
 from collections import OrderedDict
 
-from pip import FrozenRequirement
 from pip.download import PipSession, get_file_content
 from pip.req import req_file
 from pip.req.req_install import InstallRequirement
+
+from . import operations
+
+logger = logging.getLogger(__name__)
 
 
 def _new_line(filename):
@@ -117,7 +122,35 @@ def get_req_filename(env=''):
     return fname
 
 
-def parse(env=''):
+def get_req_filenames(env=''):
+    """return all requirement files in the current project that matches the pattern"""
+    filenames = set()
+
+    # create base file if it doesnt exists
+    get_req_filename()
+    if env:
+        filenames.add(get_req_filename(env))
+
+    # if requirements directory exists then add those
+    req_dir = os.path.join(os.curdir, 'requirements')
+    if os.path.exists(req_dir):
+        for filename in os.listdir(req_dir):
+            if os.path.isfile(filename):
+                if filename.endswith('.txt'):
+                    filenames.add(os.path.join('requirements', filename))
+    else:
+        # walk current directory
+        for filename in os.listdir(os.curdir):
+            if os.path.isfile(filename):
+                if filename.endswith('requirements.txt'):
+                    filenames.add(filename)
+                elif filename.startswith('requirements-'):
+                    filenames.add(filename)
+
+    return filenames
+
+
+def parse(env='', session=None):
     """
         parse requirements file. This retains comments from the file and the exact content of them. So that they can
         be written back without much distortion in the content.
@@ -127,7 +160,8 @@ def parse(env=''):
     Returns:
 
     """
-    return list(req_file.parse_requirements(get_req_filename(env), session=PipSession()))
+    session = session or PipSession()
+    return list(req_file.parse_requirements(get_req_filename(env), session=session))
 
 
 def parse_comes_from(comes_from, env):
@@ -170,50 +204,81 @@ def _cluster_to_file_reqs(reqs, env):
     """
 
     Args:
-        reqs (OrderedDict):
+        reqs (list):
 
     Returns:
-        OrderedDict:
+        OrderedDict[str:list[InstallRequirement]]:
     """
     filereqs = OrderedDict()
-    for req_name in reqs:
-        req = reqs[req_name]  # type: InstallRequirement
+    for req in reqs:  # type: InstallRequirement
         filename, line_num = parse_comes_from(req.comes_from, env)
 
         if filename not in filereqs:
-            filereqs[filename] = OrderedDict()
+            filereqs[filename] = []
 
         req.filename = filename
         req.line_num = line_num
 
-        filereqs[filename][req_name] = req
+        filereqs[filename].append(req)
     return filereqs
 
 
-def save(reqs, env=''):
+def get_installed_removed(installations, requirements):
     """
-    save requirements to the files while retain the original as much as possible including comments, etc.,
+
+    Args:
+        installations (dict): installed packages as a dict where key is the requirement name and value is the FrozenRequirement
+        requirements (dict): a dict of requirements parsed from the requirements file.
+
+    Returns:
+        set, set: installed packages and removed packages respectively
+    >>> insts = {'one': 'req', 'new_installed':'req'}
+    >>> reqs = {'one': 'req', 'this_removed':'req'}
+    >>> get_installed_removed(insts, reqs)
+    ({'new_installed'}, {'this_removed'})
     """
+    insts = set(installations.keys())
+    reqs = set(requirements.keys())
+    return insts.difference(reqs), reqs.difference(insts)
+
+
+def save(env='', session=None):
+    """
+        save installed requirements which is missing in the requirements files
+    """
+    session = session or PipSession()
+    reqs = []
+
+    for file in get_req_filenames(env):
+        reqs += list(req_file.parse_requirements(file, session=session))
+
+    env_filename = get_req_filename(env)
     uniq_reqs = _uniq_resources(reqs)
-    file_reqs = _cluster_to_file_reqs(uniq_reqs, env)
+    file_reqs = _cluster_to_file_reqs(reqs, env)
+    installations = operations.get_installations()
+
+    installed, removed = get_installed_removed(installations, uniq_reqs)
+
     # first step process the requirements and split them into separate for each of the file
     for filename in file_reqs:  # type: str
-        _, content = get_file_content(
-            filename, session=PipSession()
-        )
-        lines_enum = enumerate(content.splitlines(), start=1)
-        lines_enum = req_file.join_lines(lines_enum)
-        lines = OrderedDict(lines_enum)
-        filename = get_req_filename(env)
-        for req_name in file_reqs[filename]:
-            req = file_reqs[filename][req_name]
-            try:
-                frozenrequirement = FrozenRequirement.from_dist(req.get_dist(), [])
-            except Exception:
-                frozenrequirement = FrozenRequirement(req.name, req.req, req.editable)
+        _, content = get_file_content(filename, session=session)
 
-            _line_num = req.line_num if req.line_num and req.line_num in lines else max(lines.keys()) + 1
-            lines[_line_num] = str(frozenrequirement).strip()
+        orig_lines = enumerate(content.splitlines(), start=1)
+        joined_lines = req_file.join_lines(orig_lines)
+        lines = OrderedDict(joined_lines)
 
+        # updates
+        for req in file_reqs[filename]:
+            frozenrequirement = installations.get(req.name)
+            if frozenrequirement:
+                lines[req.line_num] = str(frozenrequirement).strip()
+            else:
+                lines.pop(req.line_num)
+
+        # save new requirements
+        if filename == env_filename:
+            line_num = max(lines.keys()) if lines.keys() else 1
+            for new_req in installed:
+                lines[line_num] = str(installations[new_req]).strip()
         with open(filename, 'wb') as f:
-            f.write("\n".join(lines.values()).encode('utf-8'))
+            f.write(("\n".join(lines.values()) + '\n').encode('utf-8'))

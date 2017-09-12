@@ -28,7 +28,7 @@ pip.commands_dict[InstallCommandPlus.name] = InstallCommandPlus
 
 def main():
     pip.main()
-    
+
 
 if __name__ == '__main__':
     main()
