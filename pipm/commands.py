@@ -89,7 +89,7 @@ class InstallCommandPlus(InstallCommand):
         """
         options, args = super(InstallCommandPlus, self).parse_args(args)
         if not options.requirements and not args:
-            options.requirements = [file.get_req_filename(options.req_environment), ]
+            options, args = super(InstallCommandPlus, self).parse_args(['-r', file.get_req_filename(options.req_environment)])
         return options, args
 
     def run(self, options, args):
@@ -119,3 +119,25 @@ class UninstallCommandPlus(UninstallCommand):
     def run(self, options, args):
         super(UninstallCommandPlus, self).run(options, args)
         file.save()
+
+
+class UpdateCommand(InstallCommandPlus):
+    name = 'update'
+
+    usage = """
+          %prog [environment-to-update]
+          %prog [package-names-to-update]"""
+
+    summary = 'Update packages (equivalent to that of `install` with --upgrade)'
+
+    def parse_args(self, args):
+        """
+            when no argument given it fills with `-r requirements.txt` as default
+        Args:
+            args (list):
+
+        Returns:
+            options, list:
+        """
+
+        return super(UpdateCommand, self).parse_args(args + ['--upgrade'])

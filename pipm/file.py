@@ -26,7 +26,7 @@ def _new_line(filename):
         if f.read(1) == b'' and f.read() == b'':
             return
         try:
-            f.seek(-2, os.SEEK_END)
+            f.seek(-1, os.SEEK_END)
             if f.read(1) != b'\n':
                 f.write(b'\n')
         except OSError:
