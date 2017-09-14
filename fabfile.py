@@ -6,8 +6,8 @@ import pipm
 
 @task
 def release():
-    local('git tag {}'.format(pipm.__version__))
     local('git push')
+    local('git tag {}'.format(pipm.__version__))
     local('git push --tags')
 
     # dont forget to have this file
