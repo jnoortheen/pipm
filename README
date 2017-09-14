@@ -14,7 +14,7 @@ pip install pipm
 Or Install directly from the GitHub
 
 ```commandline
-pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm
+pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 ```
 
 # Usage
