@@ -5,7 +5,13 @@ is mature enough or the `pipenv` is fast enough to use.)
 
 # Installation
 
-Install directly from the GitHub (No PyPI version yet)
+Install from PyPI
+
+```
+pip install pipm
+```
+
+Or Install directly from the GitHub
 
 ```commandline
 pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm

@@ -22,7 +22,7 @@ setup(
     name="pipm",
     version=pipm.__version__,
     description="Wrapper around pip commands to auto save/delete requirements",
-    long_description=read('README.md'),
+    long_description=read('README'),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
