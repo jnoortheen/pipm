@@ -8,7 +8,7 @@ is mature enough or the `pipenv` is fast enough to use.)
 Install directly from the GitHub (No PyPI version yet)
 
 ```commandline
-pip install git://github.com/jnoortheen/pipm.git@master#egg=pipm
+pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 ```
 
 # Usage
