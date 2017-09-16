@@ -2,6 +2,7 @@ include LICENSE
 include README.md
 
 exclude fabfile.py
+exclude conftest.py
 recursive-exclude tests *
 recursive-exclude pipm.egg-info *
 
