@@ -259,7 +259,12 @@ def save(env='', session=None):
         reqs += list(req_file.parse_requirements(file, session=session))
     env_filename = get_req_filename(env)
     uniq_reqs = _uniq_resources(reqs)
+
     file_reqs = _cluster_to_file_reqs(reqs, env)
+    if not file_reqs:
+        # empty dict is returned.
+        file_reqs[env_filename] = []
+
     installations = operations.get_frozen_reqs()
     installed, removed = get_installed_removed(installations, uniq_reqs)
 

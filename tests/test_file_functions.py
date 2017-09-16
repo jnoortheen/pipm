@@ -134,3 +134,10 @@ def test_get_requirement_files(tmpdir):
         'requirements/base.txt',
         'requirements/test.txt',
     }
+
+
+def test_save_to_file(patch_dists):
+    file.save()
+    with open(file.get_req_filename()) as f:
+        lines = f.readlines()
+    assert len(lines) == 23
