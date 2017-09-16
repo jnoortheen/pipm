@@ -16,28 +16,26 @@ except NameError:
 except ImportError:
     from imp import reload
 
+STD_PKGS = stdlib_pkgs + DEV_PKGS
 
-def get_frozen_reqs(find_links=None, local_only=None, user_only=None, ):
-    find_links = find_links or []
 
-    dependency_links = []
-    skip = stdlib_pkgs + DEV_PKGS
-
+def get_dependency_links():
+    dep_links = []
     reload(pkg_resources)
 
     for dist in pkg_resources.working_set:
         if dist.has_metadata('dependency_links.txt'):
-            dependency_links.extend(
+            dep_links.extend(
                 dist.get_metadata_lines('dependency_links.txt')
             )
-    for link in find_links:
-        if '#egg=' in link:
-            dependency_links.append(link)
+    return dep_links
+
+
+def get_frozen_reqs():
+    dependency_links = get_dependency_links()
     installations = {}
 
-    for dist in get_installed_distributions(local_only=local_only,
-                                            skip=(),
-                                            user_only=user_only):
+    for _, dist in get_distributions().items():
         try:
             req = pip.FrozenRequirement.from_dist(
                 dist,
@@ -49,15 +47,20 @@ def get_frozen_reqs(find_links=None, local_only=None, user_only=None, ):
                 dist.project_name
             )
             continue
-        if req.name not in skip:
-            installations[req.name] = req
+        installations[req.name] = req
+
     return installations
 
 
 def get_distributions():
-    reload(pkg_resources)
+    """
 
-    return {dist.project_name.lower(): dist for dist in get_installed_distributions()}
+    Returns:
+        dict:
+    """
+    reload(pkg_resources)
+    return {dist.project_name.lower(): dist for dist in
+            get_installed_distributions(local_only=None, skip=STD_PKGS, user_only=None)}
 
 
 def get_orphaned_packages(pkgs):
@@ -85,4 +88,5 @@ def get_orphaned_packages(pkgs):
         for r in dists[dist].requires():
             all_requires.add(r.name)
 
-    return list(orphaned_pkgs.difference(all_requires))
+    orphaned_pkgs = orphaned_pkgs.difference(all_requires)
+    return list(orphaned_pkgs.difference(set(STD_PKGS)))
