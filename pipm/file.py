@@ -73,7 +73,7 @@ def get_env_reqfile(*paths, base_file_name=''):
         with open(filename, 'wb') as f:
             if base_file_name:
                 if filename != base_file_name:
-                    f.write('-r {}'.format('base.txt' if 'base' in base_file_name else base_file_name).encode('utf-8'))
+                    f.write('-r {}'.format('base.txt' if 'base' in filename else base_file_name).encode('utf-8'))
 
     return filename
 
