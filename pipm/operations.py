@@ -76,7 +76,9 @@ def get_orphaned_packages(pkgs):
     dists = get_distributions()
     removed_packages = []
     for pkg in pkgs:  # type: str
-        removed_packages.append(dists.pop(pkg.lower()))
+        pkgl = pkg.lower()
+        if pkgl in dists:
+            removed_packages.append(dists.pop(pkgl))
 
     orphaned_pkgs = set()
     for dist in removed_packages:  # type: DistInfoDistribution
