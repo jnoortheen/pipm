@@ -45,8 +45,13 @@ def get_env_reqfile(*paths, base_file_name=''):
     Returns:
         str:
     """
+    requirements_dir = os.path.join('requirements', '')
     for path in paths:
         if os.path.exists(path):
+            if path == 'requirements.txt':
+                base_path = os.path.join('requirements', 'base.txt')
+                if os.path.exists(base_path):
+                    return base_path
             return path
 
     # create file if it doesnt exist
@@ -55,7 +60,7 @@ def get_env_reqfile(*paths, base_file_name=''):
     # if requirements directory exists then prefer creating files inside that one
     if os.path.exists(os.path.join(os.curdir, 'requirements')):
         for path in paths:
-            if os.path.join('requirements', '') in path:
+            if requirements_dir in path:
                 filename = path
 
     if os.path.dirname(filename) and not os.path.exists(os.path.dirname(filename)):
@@ -71,7 +76,7 @@ def get_env_reqfile(*paths, base_file_name=''):
                 if filename != base_file_name:
                     f.write(
                         '-r {}'.format(
-                            'base.txt' if (os.path.join('requirements', '')) in filename else base_file_name
+                            'base.txt' if requirements_dir in filename else base_file_name
                         ).encode('utf-8')
                     )
 

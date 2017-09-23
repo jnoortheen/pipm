@@ -47,7 +47,7 @@ def test_get_env_reqfile_case1(tmpdir):
 
 
 def test_get_env_reqfile_case2(chdir):
-    # case 2: creates file
+    # case 2: creates file inside folder
     fname = 'requirements/some.txt'
     assert fname == file.get_env_reqfile(fname, base_file_name='requirements/base.txt', )
     with open(fname) as f:
@@ -61,13 +61,15 @@ def test_get_req_filename(chdir):
     assert {'dev-requirements.txt', 'requirements.txt'} == set(os.listdir(os.curdir))
 
 
-def test_get_req_filename_case(chdir):
+def test_get_req_filename_case2(chdir):
     """
         test it creates inside requirements directory
     """
-    file.get_env_reqfile('requirements/dev.txt', 'requirements/base.txt')
+    file.get_req_filename()  # create requirements.txt
+    rb = chdir.mkdir('requirements').join('base.txt')
+    rb.write('test')
     assert file.get_req_filename('test') == 'requirements/test.txt'
-    assert {'dev.txt', 'base.txt', 'test.txt'} == set(os.listdir(os.path.join(os.curdir, 'requirements')))
+    assert {'base.txt', 'test.txt'} == set(os.listdir(os.path.join(os.curdir, 'requirements')))
 
     # test it return base name when dir exists
     assert file.get_req_filename() == 'requirements/base.txt'
