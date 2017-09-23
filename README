@@ -58,6 +58,6 @@ pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
  
 # Testing
 
-- After installing `requirements` just run `fab test` from the root directory.
+- After installing `requirements` just run `invoke test` from the root directory.
 
 ``Note``: last tested with pip 9.0.1
