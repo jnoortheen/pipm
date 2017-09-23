@@ -29,4 +29,4 @@ def release(ctx):
 
 @task
 def test(ctx):
-    ctx.run('pytest --cov=pipm tests/')
+    ctx.run('pytest --cov=pipm --cov-report term-missing tests/')
