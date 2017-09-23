@@ -132,6 +132,16 @@ def test_get_requirement_files(chdir):
     }
 
 
+def test_get_requirement_files_case2(chdir):
+    file.get_req_filename('dev')
+    file.get_req_filename('test')
+    assert file.get_req_filenames() == {
+        'dev-requirements.txt',
+        'requirements.txt',
+        'test-requirements.txt',
+    }
+
+
 def test_save_to_file(patch_dists):
     file.save()
     with open(file.get_req_filename()) as f:

@@ -14,4 +14,4 @@ xdis==3.5.5
 PyNaCl==1.1.2
 invoke==0.20.4
 spark-parser==1.6.1
--e git+git@github.com:jnoortheen/pipm.git@cd44c976052e55b3c9606e091c18d81259546a41#egg=pipm
+-e git+git@github.com:jnoortheen/pipm.git@b5120eeff5e6e5ddc1523633538409911fb48ec4#egg=pipm

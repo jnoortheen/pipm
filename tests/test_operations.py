@@ -26,4 +26,4 @@ def test_get_frozen_reqs(patch_dists):
 
 def test_get_orphaned_packages(patch_dists):
     freqs = operations.get_orphaned_packages(['pytest'])
-    assert set(freqs) == {'py', }
+    assert set(freqs) == {'req_by_pytest', }
