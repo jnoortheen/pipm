@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = '0.6.5'
+__version__ = '0.7'
 
 import pip
 import pip.basecommand
@@ -21,6 +21,7 @@ pip.utils.get_prog = get_prog
 pip.basecommand.get_prog = get_prog
 pip.commands_dict[InstallCommandPlus.name] = InstallCommandPlus
 pip.commands_dict[UninstallCommandPlus.name] = UninstallCommandPlus
+pip.commands_dict['rm'] = UninstallCommandPlus
 pip.commands_dict['update'] = UpdateCommand
 
 
