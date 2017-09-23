@@ -41,6 +41,7 @@ pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 
 1. uninstall 
     - a wrapper around standard `pip uninstall` command
+    - alias `rm` is available
     - when uninstalling a package, this command also checks packages that are no longer required by any of the installed
     packages and removes them
     - ofcourse it removes the packages from `requirements` files
@@ -49,8 +50,8 @@ pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
     - new command
     - equivalent to calling `pip install` with `--upgrade` flag
     - update a single package or the whole environment when no argument given.
-    
-    
+
+
 # Features
 
 1. Just a wrapper around the standard pip's `install` & `uninstall` command. So all the cli options will work
