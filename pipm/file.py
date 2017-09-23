@@ -30,13 +30,7 @@ def _new_line(filename):
             if f.read(1) != b'\n':
                 f.write(b'\n')
         except OSError:
-            f.seek(0)
-            ls = f.readlines()
-            if ls:
-                last_line = ls[-1]
-                if b'\n' not in last_line:
-                    f.seek(0, os.SEEK_END)
-                    f.write(b'\n')
+            pass
 
 
 def get_env_reqfile(*paths, base_file_name=''):
@@ -200,7 +194,7 @@ def _cluster_to_file_reqs(reqs, env):
         reqs (list):
 
     Returns:
-        OrderedDict[str:list[InstallRequirement]]:
+        OrderedDict:
     """
     filereqs = OrderedDict()
     for req in reqs:  # type: InstallRequirement
@@ -216,25 +210,6 @@ def _cluster_to_file_reqs(reqs, env):
     return filereqs
 
 
-def get_installed_removed(installations, requirements):
-    """
-
-    Args:
-        installations (dict): installed packages as a dict where key is the requirement name and value is the FrozenRequirement
-        requirements (dict): a dict of requirements parsed from the requirements file.
-
-    Returns:
-        set, set: installed packages and removed packages respectively
-    >>> insts = {'one': 'req', 'new_installed':'req'}
-    >>> reqs = {'one': 'req', 'this_removed':'req'}
-    >>> get_installed_removed(insts, reqs)
-    ({'new_installed'}, {'this_removed'})
-    """
-    insts = set(installations.keys())
-    reqs = set(requirements.keys())
-    return insts.difference(reqs), reqs.difference(insts)
-
-
 def save(env='', session=None):
     """
         save installed requirements which is missing in the requirements files
@@ -243,21 +218,18 @@ def save(env='', session=None):
     reqs = []
 
     # create base file if it doesnt exists
-    get_req_filename()
-    get_req_filename(env)
+    env_filename = get_req_filename(env)
 
     for file in get_req_filenames(env):
         reqs += list(req_file.parse_requirements(file, session=session))
-    env_filename = get_req_filename(env)
-    uniq_reqs = _uniq_resources(reqs)
 
-    file_reqs = _cluster_to_file_reqs(reqs, env)
-    if not file_reqs:
-        # empty dict is returned.
-        file_reqs[env_filename] = []
+    uniq_reqs = _uniq_resources(reqs)
+    file_reqs = _cluster_to_file_reqs(uniq_reqs.values(), env)
+    for filename in get_req_filenames(env):
+        if not file_reqs.get(filename):
+            file_reqs[filename] = []
 
     installations = operations.get_frozen_reqs()
-    installed, removed = get_installed_removed(installations, uniq_reqs)
 
     # first step process the requirements and split them into separate for each of the file
     for filename in file_reqs:  # type: str
@@ -269,6 +241,7 @@ def save(env='', session=None):
 
         # 1. save new requirements
         if filename == env_filename:
+            installed = set(installations.keys()).difference(set(uniq_reqs.keys()))
             for new_req in installed:
                 line_num = len(lines) + 1
                 lines[line_num] = str(installations[new_req]).strip()

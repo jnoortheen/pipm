@@ -42,10 +42,7 @@ def get_frozen_reqs():
                 dependency_links
             )
         except RequirementParseError:
-            logger.warning(
-                "Could not parse requirement: %s",
-                dist.project_name
-            )
+            logger.warning("Could not parse requirement: %s", dist.project_name)
             continue
         installations[req.name] = req
 
