@@ -1,11 +1,12 @@
-import codecs
+import functools
 import os
 from collections import namedtuple
 
-from pip.req import req_file
 from py._path.local import LocalPath
 
 from pipm import file
+from pipm import operations
+from tests.conftest import getdists
 
 REQS_STR = """\
 # standard package name alone
@@ -142,8 +143,17 @@ def test_get_requirement_files_case2(chdir):
     }
 
 
-def test_save_to_file(patch_dists):
+def test_file_save_method(patch_dists):
+    def assert_count_to(count):
+        with open(file.get_req_filename()) as f:
+            lines = f.readlines()
+        assert len(lines) == count
+
+    # save requirements to file
     file.save()
-    with open(file.get_req_filename()) as f:
-        lines = f.readlines()
-    assert len(lines) == 23
+    assert_count_to(23)
+
+    # check it is getting removed
+    patch_dists.setattr(operations, 'get_distributions', functools.partial(getdists, 2))
+    file.save()
+    assert_count_to(21)
