@@ -1,6 +1,8 @@
 import codecs
 import os
+from collections import namedtuple
 
+from pip.req import req_file
 from py._path.local import LocalPath
 
 from pipm import file
@@ -45,7 +47,7 @@ def test_get_env_reqfile_case1(tmpdir):
 
 def test_get_env_reqfile_case2(chdir):
     # case 2: creates file
-    fname = 'some-requirements.txt'
+    fname = 'requirements/some.txt'
     assert fname == file.get_env_reqfile(fname, base_file_name='requirements/base.txt', )
     with open(fname) as f:
         cnt = f.read()
@@ -54,48 +56,46 @@ def test_get_env_reqfile_case2(chdir):
 
 
 def test_get_req_filename(chdir):
-    """
-
-    Args:
-        tmpdir (LocalPath): fixture
-
-    """
     assert file.get_req_filename('dev') == 'dev-requirements.txt'
-    assert file.get_req_filename() == 'requirements.txt'
+    assert {'dev-requirements.txt', 'requirements.txt'} == set(os.listdir(os.curdir))
 
 
-def test_parse_simple(chdir):
-    fname = file.get_req_filename()
-    with codecs.open(fname, 'w', 'utf-8') as f:
-        f.write(REQS_STR)
+def test_get_req_filename_case(chdir):
+    """
+        test it creates inside requirements directory
+    """
+    file.get_env_reqfile('requirements/dev.txt', 'requirements/base.txt')
+    assert file.get_req_filename('test') == 'requirements/test.txt'
+    assert {'dev.txt', 'base.txt', 'test.txt'} == set(os.listdir(os.path.join(os.curdir, 'requirements')))
 
-    # single file parsing
-    install_reqs = file.parse()
-    for r in install_reqs:
-        print(r)
-    assert len(install_reqs) == 5
-
-
-def test_parse_nested(chdir):
-    # nested file parsing
-    with codecs.open(file.get_req_filename(), 'w', 'utf-8') as f:
-        f.write(REQS_STR)
-    fname = file.get_req_filename('dev')
-    with codecs.open(fname, 'w', 'utf-8') as f:
-        f.write(DEV_REQS_STR)
-    install_reqs = file.parse('dev')
-    assert len(install_reqs) == 6
+    # test it return base name when dir exists
+    assert file.get_req_filename() == 'requirements/base.txt'
 
 
 def test_cluster_file_reqs(chdir):
-    with codecs.open(file.get_req_filename(), 'w', 'utf-8') as f:
-        f.write(REQS_STR)
-    fname = file.get_req_filename('dev')
-    with codecs.open(fname, 'w', 'utf-8') as f:
-        f.write(DEV_REQS_STR)
-    install_reqs = file.parse('dev')
-    file_reqs = file._cluster_to_file_reqs(install_reqs, 'div')
-    assert set(file_reqs.keys()) == {'dev-requirements.txt', 'requirements.txt'}
+    req = namedtuple('Req', ['name', 'comes_from', ])
+
+    class InstallRequirement(req):
+        pass
+
+    install_reqs = [
+                       InstallRequirement(
+                           'name{}'.format(i),
+                           '-r requirements.txt (line {})'.format(i),
+                       ) for i in range(5)
+                   ] + [
+                       InstallRequirement(
+                           'name{}'.format(i),
+                           '-r dev-requirements.txt (line {})'.format(i),
+                       ) for i in range(5)
+                   ] + [
+                       InstallRequirement(
+                           'name{}'.format(i),
+                           None,
+                       ) for i in range(5)
+                   ]
+    file_reqs = file._cluster_to_file_reqs(install_reqs, 'new')
+    assert set(file_reqs.keys()) == {'dev-requirements.txt', 'requirements.txt', 'new-requirements.txt'}
 
 
 def test_parse_comes_from(chdir):
@@ -112,18 +112,14 @@ def test_parse_comes_from_case_nofile(chdir):
 
 
 def test_uniq_reqs(chdir):
-    fname = file.get_req_filename()
-    with codecs.open(fname, 'w', 'utf-8') as f:
-        f.write(REQS_STR)
-    install_reqs = file.parse()
+    InstallRequirement = namedtuple('Req', ['name', 'comes_from'])
+    install_reqs = [InstallRequirement('name{}'.format(i), 'comes_from{}'.format(i)) for i in range(5)]
     ireqs = install_reqs + install_reqs
     ireqs = file._uniq_resources(ireqs)
     assert len(ireqs) == 5
 
 
-def test_get_requirement_files(tmpdir):
-    reqf = tmpdir.mkdir('reqf')
-    os.chdir(reqf.strpath)
+def test_get_requirement_files(chdir):
     os.mkdir('requirements')
     base_fname = os.path.join('requirements', 'base.txt')
     open(base_fname, 'wb').close()

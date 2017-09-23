@@ -1,9 +1,5 @@
-import os
-
 from pip import FrozenRequirement
-
 from pipm import operations
-import pickle
 
 
 def test_get_distributions(monkeypatch):

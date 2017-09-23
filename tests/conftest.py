@@ -4,7 +4,7 @@ from pipm import operations
 import pickle
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def chdir(tmpdir_factory):
     tmpdir = tmpdir_factory.mktemp('test')
     os.chdir(tmpdir.strpath)

@@ -56,7 +56,9 @@ def get_env_reqfile(*paths, base_file_name=''):
             return path
 
     # create file if it doesnt exist
-    filename = paths[0]
+    filename = paths[0]  # prefer the first pattern in the list
+
+    # if requirements directory exists then prefer creating files inside that one
     if os.path.exists(os.path.join(os.curdir, 'requirements')):
         for path in paths:
             if os.path.join('requirements', '') in path:
@@ -73,7 +75,11 @@ def get_env_reqfile(*paths, base_file_name=''):
         with open(filename, 'wb') as f:
             if base_file_name:
                 if filename != base_file_name:
-                    f.write('-r {}'.format('base.txt' if 'base' in filename else base_file_name).encode('utf-8'))
+                    f.write(
+                        '-r {}'.format(
+                            'base.txt' if (os.path.join('requirements', '')) in filename else base_file_name
+                        ).encode('utf-8')
+                    )
 
     return filename
 
@@ -128,13 +134,8 @@ def get_req_filename(env=''):
 
 
 def get_req_filenames(env=''):
-    """return all requirement files in the current project that matches the pattern"""
+    """return all requirement files in the current project that matches the standard requirements filename pattern"""
     filenames = set()
-
-    # create base file if it doesnt exists
-    get_req_filename()
-    if env:
-        filenames.add(get_req_filename(env))
 
     # if requirements directory exists then add those
     req_dir = os.path.join(os.curdir, 'requirements')
@@ -154,20 +155,6 @@ def get_req_filenames(env=''):
                     filenames.add(filename)
 
     return filenames
-
-
-def parse(env='', session=None):
-    """
-        parse requirements file. This retains comments from the file and the exact content of them. So that they can
-        be written back without much distortion in the content.
-    Args:
-        env:
-
-    Returns:
-
-    """
-    session = session or PipSession()
-    return list(req_file.parse_requirements(get_req_filename(env), session=session))
 
 
 def parse_comes_from(comes_from, env):
@@ -254,6 +241,10 @@ def save(env='', session=None):
     """
     session = session or PipSession()
     reqs = []
+
+    # create base file if it doesnt exists
+    get_req_filename()
+    get_req_filename(env)
 
     for file in get_req_filenames(env):
         reqs += list(req_file.parse_requirements(file, session=session))
