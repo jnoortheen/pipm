@@ -10,6 +10,7 @@ def release(ctx):
     Args:
         ctx (Context):
     """
+    ctx.run('m2r README.md')
     ctx.run('git push')
     ctx.run('git tag {}'.format(pipm.__version__))
     ctx.run('git push --tags')
