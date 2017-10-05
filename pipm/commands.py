@@ -89,8 +89,8 @@ class InstallCommandPlus(InstallCommand):
         """
         result = super(InstallCommandPlus, self).run(options, args, )
 
-        if not options.requirements:
-            file.save(options.req_environment)
+        # save changes to file if any
+        file.save(options.req_environment)
 
         return result
 
