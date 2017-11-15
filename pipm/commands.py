@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from pip.commands import InstallCommand, UninstallCommand
+from pip.commands import InstallCommand, UninstallCommand, FreezeCommand
 
 from pipm.operations import get_orphaned_packages
 from . import file
@@ -93,6 +93,20 @@ class InstallCommandPlus(InstallCommand):
         file.save(options.req_environment)
 
         return result
+
+
+class FreezeCommandPlus(FreezeCommand):
+    """
+        A wrapper around standard freeze command that updates currently installed packages to requirement files
+        after showing the packages list in standard output.
+    """
+
+    def run(self, options, args):
+        res = super(FreezeCommandPlus, self).run(options, args)
+
+        file.save()
+
+        return res
 
 
 class UninstallCommandPlus(UninstallCommand):

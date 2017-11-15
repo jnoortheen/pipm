@@ -95,3 +95,17 @@ def test_remove_cmd_run(mocker):
 
     run.assert_called_once_with(opts, ['dev', 'pkg1', 'pkg2'])
     save.assert_called_once()
+
+
+def test_freeze_cmd_run(mocker):
+    run = mocker.patch.object(commands.FreezeCommand, 'run')  # type: MagicMock
+    save = mocker.patch.object(commands.file, 'save')  # type: MagicMock
+    mocker.patch.object(commands, 'get_orphaned_packages', return_value=['pkg1', 'pkg2'])  # type: MagicMock
+
+    # run method
+    cmd = commands.FreezeCommandPlus()
+    opts, args = cmd.parse_args([])
+    cmd.run(opts, args)
+
+    run.assert_called_once()
+    save.assert_called_once()
