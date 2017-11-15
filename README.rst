@@ -71,6 +71,12 @@ Usage
    * equivalent to calling ``pip install`` with ``--upgrade`` flag
    * update a single package or the whole environment when no argument given.
 
+#. 
+   save/freeze
+
+
+   * extends the standard freeze command to save the currently installed packages
+
 Features
 ========
 
