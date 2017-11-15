@@ -78,6 +78,9 @@ All `pip` commands will work as it is, plus they will be saved to the requiremen
     - equivalent to calling `pip install` with `--upgrade` flag
     - update a single package or the whole environment when no argument given.
 
+1. save/freeze
+    - extends the standard freeze command to save the currently installed packages
+
 
 # Features
 
