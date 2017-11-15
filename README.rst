@@ -20,6 +20,46 @@ Or Install directly from the GitHub
 
    pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 
+Quickstart
+==========
+
+All ``pip`` commands will work as it is, plus they will be saved to the requirements file.
+
+installation
+^^^^^^^^^^^^
+
+``pipm install pkg-name``
+
+installation as development dependency
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``pipm install pkg-name --dev``
+
+installation as testing dependency
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``pipm install pkg-name --test``
+
+removal
+^^^^^^^
+
+``pipm uninstall pkg-name``
+
+update all your dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``pipm update``
+
+install all your dependencies from the requirements file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``pipm install``
+
+including development dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``pipm install --dev``
+
 Usage
 =====
 
@@ -70,6 +110,12 @@ Usage
    * new command
    * equivalent to calling ``pip install`` with ``--upgrade`` flag
    * update a single package or the whole environment when no argument given.
+
+#. 
+   save/freeze
+
+
+   * extends the standard freeze command to save the currently installed packages
 
 Features
 ========
