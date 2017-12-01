@@ -32,6 +32,15 @@ class InstallCommandPlus(InstallCommand):
         )
 
         cmd_opts.add_option(
+            '--all',
+            dest='req_environment',
+            action='callback',
+            callback=store_req_environment,
+            help="install all requirements from all environments. (E.g. `pipm install --all` will install "
+                 "requirements from all requirements-*.txt files.)"
+        )
+
+        cmd_opts.add_option(
             '--test',
             dest='req_environment',
             action='callback',
@@ -67,13 +76,21 @@ class InstallCommandPlus(InstallCommand):
             options, list:
         """
         options, args = super(InstallCommandPlus, self).parse_args(args)
-        if not options.requirements and not args:
+        if not options.requirements and ((len(args) == 1 and set(args) == {'--all'}) or not args):
             env = options.req_environment
             upgrade = options.upgrade
 
-            options, args = super(InstallCommandPlus, self).parse_args(['-r', file.get_req_filename(env)])
+            if env == 'all':
+                req_args = []
+                for req in file.get_req_filenames():
+                    req_args.append('-r')
+                    req_args.append(req)
+            else:
+                req_args = ['-r', file.get_req_filename(env)]
+            options, args = super(InstallCommandPlus, self).parse_args(req_args)
             options.req_environment = env
             options.upgrade = upgrade
+            options.no_save = True
 
         return options, args
 
@@ -89,8 +106,9 @@ class InstallCommandPlus(InstallCommand):
         """
         result = super(InstallCommandPlus, self).run(options, args, )
 
-        # save changes to file if any
-        file.save(options.req_environment)
+        if not hasattr(options, 'no_save') or (result and result.successfully_installed):
+            # save changes to file if any
+            file.save(options.req_environment)
 
         return result
 

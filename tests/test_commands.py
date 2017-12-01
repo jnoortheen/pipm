@@ -1,10 +1,7 @@
-from unittest import mock
-from unittest.mock import MagicMock, patch
-
-from pytest_mock import MockFixture
+from unittest.mock import MagicMock
 
 from pipm import commands
-from pipm.file import get_req_filename
+from pipm.file import get_req_filename, get_req_filenames
 
 
 def test_fill_args_when_no_args_given(chdir):
@@ -32,6 +29,24 @@ def test_fill_args_when_no_args_given_dev(chdir):
         cmd = commands.InstallCommandPlus()
         opts, args = cmd.parse_args(['--{}'.format(env)])
         assert opts.requirements == [f, ]
+
+
+def test_fill_args_when_no_args_given_all(chdir):
+    """
+
+    Args:
+        tmpdir (LocalPath): fixture
+
+    """
+    # create the below two files
+    get_req_filename('dev')
+    get_req_filename('test')
+
+    # start test
+    fset = get_req_filenames()
+    cmd = commands.InstallCommandPlus()
+    opts, args = cmd.parse_args(['--all'])
+    assert set(opts.requirements) == fset
 
 
 def test_fill_args_when_no_args_given_environ(chdir):

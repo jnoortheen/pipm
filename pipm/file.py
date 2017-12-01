@@ -132,7 +132,7 @@ def get_req_filename(env=''):
     return fname
 
 
-def get_req_filenames(env=''):
+def get_req_filenames():
     """return all requirement files in the current project that matches the standard requirements filename pattern"""
     filenames = set()
 
@@ -225,12 +225,12 @@ def save(env='', session=None):
     # create base file if it doesnt exists
     env_filename = get_req_filename(env)
 
-    for file in get_req_filenames(env):
+    for file in get_req_filenames():
         reqs += list(req_file.parse_requirements(file, session=session))
 
     uniq_reqs = _uniq_resources(reqs)
     file_reqs = _cluster_to_file_reqs(uniq_reqs.values(), env)
-    for filename in get_req_filenames(env):
+    for filename in get_req_filenames():
         if not file_reqs.get(filename):
             file_reqs[filename] = []
 
