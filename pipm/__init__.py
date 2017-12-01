@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = '0.8'
+__version__ = '0.9'
 
 import pip
 import pip.basecommand

@@ -18,11 +18,16 @@ pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 ```
 
 # Quickstart
-All `pip` commands will work as it is, plus they will be saved to the requirements file.
+All `pip` commands will work as it is, plus they will be saved to the requirements file. Both `pip` and `pipm` command
+will work as the same. For some reason, if the pip command is not overridden, you could always rely on `pipm`. 
+
+## warning
+the `pip` command will be replaced by the one that comes with this package. There is no functionality gets 
+affected other than manipulating the requirements files. 
 
 ### installation
-```pipm install pkg-name```
-
+```pipm install pkg-name``` or 
+```pip install pkg-name```
 
 ### installation as development dependency
 ```pipm install pkg-name --dev```
