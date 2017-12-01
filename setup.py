@@ -49,6 +49,7 @@ setup(
     entry_points={
         "console_scripts": [
             "pipm=pipm:main",
+            "pip=pipm:main",
         ],
     },
     # tests_require=tests_require,

@@ -106,7 +106,7 @@ class InstallCommandPlus(InstallCommand):
         """
         result = super(InstallCommandPlus, self).run(options, args, )
 
-        if not hasattr(options, 'no_save') or (result and result.successfully_installed):
+        if not hasattr(options, 'no_save'):
             # save changes to file if any
             file.save(options.req_environment)
 
