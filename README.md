@@ -1,7 +1,7 @@
 # pipm
 
 Python package management workflow using pip & requirements file as its metadata. (For the time being until `Pipfile` 
-is mature enough or the `pipenv` is fast enough to use.)
+is mature.)
 
 # Installation
 
