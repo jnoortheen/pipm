@@ -8,6 +8,7 @@ from pkg_resources import RequirementParseError, DistInfoDistribution
 from pip.compat import stdlib_pkgs
 from pip.commands.freeze import DEV_PKGS
 
+DEV_PKGS = DEV_PKGS + ('pipm',)
 logger = logging.getLogger(__name__)
 try:
     reload
