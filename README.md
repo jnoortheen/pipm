@@ -22,8 +22,9 @@ All `pip` commands will work as it is, plus they will be saved to the requiremen
 will work as the same. For some reason, if the pip command is not overridden, you could always rely on `pipm`. 
 
 ## warning
-the `pip` command will be replaced by the one that comes with this package. There is no functionality gets 
-affected other than manipulating the requirements files. 
+- the `pip` command will be replaced by the one that comes with this package. There is no functionality gets 
+affected other than manipulating the requirements files. So when you uninstall `pipm` the `pip` command will also get removed. To remedy this, just install `pip` again using `easy_install pip`
+- this tool manipulates all your requirements file. So be sure to use version control software or take backup of your files to keep track of changes. 
 
 ### installation
 ```pipm install pkg-name``` or 
