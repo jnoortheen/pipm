@@ -1,8 +1,7 @@
 import codecs
 import os
-import re
-import sys
 
+from m2r import convert
 from setuptools import setup, find_packages
 
 import pipm
@@ -22,7 +21,7 @@ setup(
     name="pipm",
     version=pipm.__version__,
     description="Wrapper around pip commands to auto save/delete requirements",
-    long_description=read('README.rst'),
+    long_description=convert(read('README.md')),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
