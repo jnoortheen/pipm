@@ -63,7 +63,7 @@ affected other than manipulating the requirements files. So when you uninstall `
         will create one in the current directory.
         - when no package name is given then it is equivalent to `-r requirements.txt` and it will install all requirements
         from the current directory
-    1. Additions options:
+    1. Additional options:
         the below saves to file when package name given otherwise equivalent to passing requirements file name.
         1. `--dev` - saves to development requirements
         1. `--prod` - saves to production requirements
@@ -83,6 +83,8 @@ affected other than manipulating the requirements files. So when you uninstall `
     - new command
     - equivalent to calling `pip install` with `--upgrade` flag
     - update a single package or the whole environment when no argument given.
+    - by default the packages are updated interactively
+        - set `--auto-update` to disable this
 
 1. save/freeze
     - extends the standard freeze command to save the currently installed packages
@@ -107,6 +109,10 @@ pew new pipm -a .
 pip install -r dev-requirements.txt
 ```
 
+-  to test from local sources
+```
+pip install -e .
+```
 
 # Testing
 
