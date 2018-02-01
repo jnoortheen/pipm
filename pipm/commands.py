@@ -1,16 +1,20 @@
 from __future__ import absolute_import
 
-from pip.commands import InstallCommand, UninstallCommand, FreezeCommand
+from pip.commands import UninstallCommand, FreezeCommand
 
+from pip.commands import install
 from pipm.operations import get_orphaned_packages
-from . import file
+from . import file, _patched_req_set
 
 
 def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
     parser.values.req_environment = opt_str.strip('-')
 
 
-class InstallCommandPlus(InstallCommand):
+install.RequirementSet = _patched_req_set.PatchedRequirementSet
+
+
+class InstallCommandPlus(install.InstallCommand):
     def __init__(self, *args, **kw):
         """
 
@@ -156,6 +160,25 @@ class UpdateCommand(InstallCommandPlus):
 
     summary = 'Update packages (equivalent to that of `install` with --upgrade)'
 
+    def __init__(self, *args, **kw):
+        """
+
+        Args:
+            *args:
+            **kw:
+        """
+        super(UpdateCommand, self).__init__(*args, **kw)
+
+        cmd_opts = self.cmd_opts
+
+        cmd_opts.add_option(
+            '--auto-update',
+            dest='interactive_update',
+            default=True,
+            action='store_false',
+            help="Update packages without user input",
+        )
+
     def parse_args(self, args):
         """
             when no argument given it fills with `-r requirements.txt` as default
@@ -165,4 +188,7 @@ class UpdateCommand(InstallCommandPlus):
         Returns:
             options, list:
         """
+        options, args = super(UpdateCommand, self).parse_args(args)
+        _patched_req_set.PatchedRequirementSet.interactive_install = bool(options.interactive_update)
+
         return super(UpdateCommand, self).parse_args(args + ['--upgrade'])
