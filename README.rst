@@ -93,7 +93,7 @@ Usage
      * when no package name is given then it is equivalent to ``-r requirements.txt`` and it will install all requirements
        from the current directory
 
-   * Additions options:
+   * Additional options:
       the below saves to file when package name given otherwise equivalent to passing requirements file name.
 
      #. ``--dev`` - saves to development requirements
@@ -120,6 +120,9 @@ Usage
    * new command
    * equivalent to calling ``pip install`` with ``--upgrade`` flag
    * update a single package or the whole environment when no argument given.
+   * by default the packages are updated interactively
+
+     * set ``--auto-update`` to disable this
 
 #. 
    save/freeze
@@ -134,10 +137,37 @@ Features
 #. Just a wrapper around the standard pip's ``install`` & ``uninstall`` command. So all the cli options will work
 #. Handles multiple ``requirements`` files
 
+Development
+===========
+
+
+* clone the repository and create new virtualenv
+
+.. code-block::
+
+   git clone git@github.com:jnoortheen/pipm.git
+   cd pipm
+   pew new pipm -a .
+
+
+* 
+  install development requirements
+
+  .. code-block::
+
+     pip install -r dev-requirements.txt
+
+* 
+  to test from local sources
+
+  .. code-block::
+
+     pip install -e .
+
 Testing
 =======
 
 
-* After installing ``requirements`` just run ``invoke test`` from the root directory.
+* After installing ``text-requirements.txt`` just run ``invoke test`` from the root directory.
 
 ``Note``\ : last tested with pip 9.0.1
