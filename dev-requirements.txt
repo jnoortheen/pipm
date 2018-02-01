@@ -1,5 +1,5 @@
 -r requirements.txt
-six==1.10.0
+six==1.11.0
 asn1crypto==0.22.0
 idna==2.6
 pycparser==2.18
