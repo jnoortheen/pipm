@@ -92,9 +92,24 @@ affected other than manipulating the requirements files. So when you uninstall `
 
 1. Just a wrapper around the standard pip's `install` & `uninstall` command. So all the cli options will work
 1. Handles multiple `requirements` files
- 
+
+# Development
+- clone the repository and create new virtualenv
+
+```
+git clone git@github.com:jnoortheen/pipm.git
+cd pipm
+pew new pipm -a .
+```
+
+- install development requirements
+```
+pip install -r dev-requirements.txt
+```
+
+
 # Testing
 
-- After installing `requirements` just run `invoke test` from the root directory.
+- After installing `text-requirements.txt` just run `invoke test` from the root directory.
 
 ``Note``: last tested with pip 9.0.1
