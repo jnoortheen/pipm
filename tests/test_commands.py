@@ -86,7 +86,7 @@ def test_update_command_parse_args():
 def test_install_cmd_run(mocker):
     """
     """
-    run = mocker.patch.object(commands.InstallCommand, 'run')  # type: MagicMock
+    run = mocker.patch.object(commands.install.InstallCommand, 'run')  # type: MagicMock
     save = mocker.patch.object(commands.file, 'save')  # type: MagicMock
 
     # run method

@@ -102,3 +102,4 @@ ENV/
 
 /.idea/
 /.directory
+.pytest_cache/
