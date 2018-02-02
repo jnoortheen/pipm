@@ -21,7 +21,7 @@ class PatchedRequirementSet(RequirementSet):
             for requirement in to_install:
                 # patch 1: start
                 if self.__class__.interactive_install:
-                    want_to_install = input('Do you want to install {}? [Y/n]'.format(requirement.req))
+                    want_to_install = input('Do you want to update {}? [Y/n]'.format(requirement.req))
                     if str(want_to_install).lower() in {'no', 'n', }:
                         continue
                 # patch 1: end
