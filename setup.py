@@ -1,7 +1,5 @@
 import codecs
 import os
-import re
-import sys
 
 from setuptools import setup, find_packages
 
@@ -52,8 +50,11 @@ setup(
             "pip=pipm:main",
         ],
     },
-    # tests_require=tests_require,
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
+    # tests_require=tests_require,
+    install_requires=[
+        'pip>9,<10',
+    ]
     # extras_require={
     #     'testing': tests_require,
     # },

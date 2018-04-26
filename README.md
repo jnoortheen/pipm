@@ -118,4 +118,5 @@ pip install -e .
 
 - After installing `text-requirements.txt` just run `invoke test` from the root directory.
 
-``Note``: last tested with pip 9.0.1
+# version compatibility
+the package is versioned in accordance with `pip`. `pipm-9.*` will be compatible with `pip-9` and so on.
