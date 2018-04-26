@@ -120,3 +120,12 @@ pip install -e .
 
 # version compatibility
 the package is versioned in accordance with `pip`. `pipm-9.*` will be compatible with `pip-9` and so on.
+
+# Uninstallation Notes
+- since pipm overwrites pip executable in path, please make sure that after removing `pipm`, 
+install pip itself with `easy_install`
+
+```commandline
+pip uninstall pipm
+easy_install pip
+```
