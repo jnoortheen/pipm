@@ -1,14 +1,13 @@
 from __future__ import absolute_import
 
 import logging
-import pip
-from pip.utils import get_installed_distributions
-from pip.utils import pkg_resources
-from pkg_resources import RequirementParseError, DistInfoDistribution
-from pip.compat import stdlib_pkgs
-from pip.commands.freeze import DEV_PKGS
+from pip._internal.operations.freeze import FrozenRequirement
+from pip._internal.utils.misc import get_installed_distributions
+from pip._internal.compat import stdlib_pkgs
+from pip._internal.commands.freeze import DEV_PKGS
+import pkg_resources
 
-DEV_PKGS = DEV_PKGS + ('pipm',)
+DEV_PKGS = DEV_PKGS.union({'pipm', })
 logger = logging.getLogger(__name__)
 try:
     reload
@@ -17,7 +16,7 @@ except NameError:
 except ImportError:
     from imp import reload
 
-STD_PKGS = stdlib_pkgs + DEV_PKGS
+STD_PKGS = stdlib_pkgs.union(DEV_PKGS)
 
 
 def get_dependency_links():
@@ -38,11 +37,11 @@ def get_frozen_reqs():
 
     for _, dist in get_distributions().items():
         try:
-            req = pip.FrozenRequirement.from_dist(
+            req = FrozenRequirement.from_dist(
                 dist,
                 dependency_links
             )
-        except RequirementParseError:
+        except pkg_resources.RequirementParseError:
             logger.warning("Could not parse requirement: %s", dist.project_name)
             continue
         installations[req.name] = req
@@ -79,7 +78,7 @@ def get_orphaned_packages(pkgs):
             removed_packages.append(dists.pop(pkgl))
 
     orphaned_pkgs = set()
-    for dist in removed_packages:  # type: DistInfoDistribution
+    for dist in removed_packages:  # type: pkg_resources.DistInfoDistribution
         for r in dist.requires():
             orphaned_pkgs.add(r.name)
 

@@ -1,4 +1,4 @@
-from pip.req.req_set import logger, indent_log, RequirementSet
+from pip._internal.req.req_set import logger, indent_log, RequirementSet
 
 
 class PatchedRequirementSet(RequirementSet):

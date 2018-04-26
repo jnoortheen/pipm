@@ -1,4 +1,4 @@
-from pip import FrozenRequirement
+from pip._internal.operations.freeze import FrozenRequirement
 from pipm import operations
 
 

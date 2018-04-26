@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
-from pip.commands import UninstallCommand, FreezeCommand
+from pip._internal.commands import UninstallCommand, FreezeCommand
 
-from pip.commands import install
+from pip._internal.commands import install
 from pipm.operations import get_orphaned_packages
 from . import file, _patched_req_set
 
