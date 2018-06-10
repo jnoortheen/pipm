@@ -4,14 +4,37 @@ from pip._internal.commands import UninstallCommand, FreezeCommand
 
 from pip._internal.commands import install
 from pipm.operations import get_orphaned_packages
-from . import file, _patched_req_set
+from . import file
+
+INTERACTIVE_UPDATE = "--interactive-update"
 
 
 def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
     parser.values.req_environment = opt_str.strip('-')
 
 
-install.RequirementSet = _patched_req_set.PatchedRequirementSet
+orig_install_given_reqs = install.install_given_reqs
+
+
+def patched_install_given_reqs(to_install, install_options, global_options=(),
+                               *args, **kwargs):
+    from pip._internal.utils.logging import indent_log
+    accepted_reqs = []
+    with indent_log():
+        confirm_update = INTERACTIVE_UPDATE in install_options
+        if install_options and confirm_update:
+            install_options.remove(INTERACTIVE_UPDATE)
+        for requirement in to_install:
+            if confirm_update:
+                want_to_install = input('Do you want to update {}? [Y/n]'.format(requirement.req))
+                if str(want_to_install).lower() in {'no', 'n', }:
+                    continue
+            accepted_reqs.append(requirement)
+    return orig_install_given_reqs(accepted_reqs, install_options, global_options, *args, **kwargs)
+
+
+# patch the original function
+install.install_given_reqs = patched_install_given_reqs
 
 
 class InstallCommandPlus(install.InstallCommand):
@@ -95,7 +118,6 @@ class InstallCommandPlus(install.InstallCommand):
             options.req_environment = env
             options.upgrade = upgrade
             options.no_save = True
-
         return options, args
 
     def run(self, options, args):
@@ -188,7 +210,10 @@ class UpdateCommand(InstallCommandPlus):
         Returns:
             options, list:
         """
-        options, args = super(UpdateCommand, self).parse_args(args)
-        _patched_req_set.PatchedRequirementSet.interactive_install = bool(options.interactive_update)
+        options, args = super(UpdateCommand, self).parse_args(args + ['--upgrade'])
+        opts = options.install_options or []
+        if options.interactive_update:
+            opts.append(INTERACTIVE_UPDATE)
+        options.install_options = opts
 
-        return super(UpdateCommand, self).parse_args(args + ['--upgrade'])
+        return options, args
