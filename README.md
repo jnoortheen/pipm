@@ -1,10 +1,11 @@
 # pipm
 
-Python package management workflow using pip & requirements file as its metadata. (For the time being until `Pipfile` 
-is mature.)
+Python package management workflow using pip, requirements file & setup.cfg as its metadata. 
+(For the time being and old world of python)
 
 # Installation
 
+- Adviced to install only inside virtualenv as this will replace pip executable
 Install from PyPI
 
 ```
@@ -17,14 +18,21 @@ Or Install directly from the GitHub
 pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 ```
 
+**Note:**
+- This tool manipulates all your requirements file. So be sure to use version control software or take backup of your files to keep track of changes. 
+
 # Quickstart
 All `pip` commands will work as it is, plus they will be saved to the requirements file. Both `pip` and `pipm` command
-will work as the same. For some reason, if the pip command is not overridden, you could always rely on `pipm`. 
+will work as the same. For some reason, if the pip command is not overridden, you could always rely on `pipm`.   
 
-## warning
-- the `pip` command will be replaced by the one that comes with this package. There is no functionality gets 
-affected other than manipulating the requirements files. So when you uninstall `pipm` the `pip` command will also get removed. To remedy this, just install `pip` again using `easy_install pip`
-- this tool manipulates all your requirements file. So be sure to use version control software or take backup of your files to keep track of changes. 
+### install all your dependencies from the requirements file
+
+- to install only from `requirements.txt` 
+
+```pipm install```
+- to install from all `*requirements*.txt`
+
+```pipm install --all```
 
 ### installation
 ```pipm install pkg-name``` or 
@@ -42,9 +50,6 @@ affected other than manipulating the requirements files. So when you uninstall `
 
 ### update all your dependencies
 ```pipm update```
-
-### install all your dependencies from the requirements file
-```pipm install```
 
 ### including development dependencies
 ```pipm install --dev```
@@ -92,8 +97,9 @@ affected other than manipulating the requirements files. So when you uninstall `
 
 # Features
 
-1. Just a wrapper around the standard pip's `install` & `uninstall` command. So all the cli options will work
-1. Handles multiple `requirements` files
+1. Just a wrapper around the standard pip's `install/uninstall` command. So all the cli options will work
+2. Handles multiple `requirements` files
+3. No new set of files. requirements files contain pinned dependecies and setup.cfg contain abstract dependencies.
 
 # Development
 - clone the repository and create new virtualenv
@@ -128,3 +134,17 @@ install pip itself with `easy_install`
 pip uninstall pipm
 easy_install pip
 ```
+
+# Alternatives and their problems (IMHO)
+
+1. [pipenv](https://docs.pipenv.org/) 
+    - good for local development with only one virtual environment per project
+    - Not good when we need to deploy over production server or keep multiple virtuals-envs
+    - it is better to use `pew` alone instead of the shell command that comes with this
+2. [pip-tools](https://github.com/jazzband/pip-tools)
+    - another set of files to keep track of, additional commands to remember
+3. [poetry](https://github.com/sdispater/poetry) 
+    - better than pipenv and do not interfere much in environment management with pew
+    - the problems I faced are related to installing dependencies in remote servers/docker environments. 
+    As the project matures this problem might get resolved. 
+        

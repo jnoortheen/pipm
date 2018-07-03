@@ -103,3 +103,4 @@ ENV/
 /.idea/
 /.directory
 .pytest_cache/
+.todos.md
