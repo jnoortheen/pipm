@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from mock import MagicMock
 
 from pipm import commands
 from pipm.file import get_req_filename, get_req_filenames

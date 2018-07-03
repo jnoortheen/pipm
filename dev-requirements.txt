@@ -23,3 +23,5 @@ pytest-mock==1.6.3
 pluggy==0.6.0
 attrs==17.4.0
 more-itertools==4.1.0
+tox==3.0.0
+virtualenv==16.0.0

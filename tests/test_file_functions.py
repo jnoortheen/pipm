@@ -32,7 +32,7 @@ some_content==0.1.0 # with inline comment you need to write this back
 def test_append_last_line(tmpdir):
     p = tmpdir.mkdir("sub").join("hello.txt")
     p.write("content")
-    file._new_line(p)
+    file._new_line(str(p))
     assert p.read() == "content\n"
 
 
@@ -159,3 +159,11 @@ def test_file_save_method(patch_dists):
     patch_dists.setattr(operations, 'get_distributions', functools.partial(getdists, 2))
     file.save()
     assert_count_to(21)
+
+
+def test_get_patterns():
+    assert set(file.get_patterns('dev', 'development')) == {
+        'dev-requirements.txt', 'requirements/dev.txt', 'requirements-dev.txt',
+        'development-requirements.txt', 'requirements/development.txt', 'requirements-development.txt'
+    }
+    assert file.get_patterns('base') == ['requirements.txt', 'requirements/base.txt']

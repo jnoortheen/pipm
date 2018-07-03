@@ -14,8 +14,6 @@ def read(*parts):
     return codecs.open(os.path.join(here, *parts), 'r').read()
 
 
-tests_require = read('test-requirements.txt').splitlines()[1:]
-
 setup(
     name="pipm",
     version=pipm.__version__,

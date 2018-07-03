@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import errno
 import logging
@@ -33,7 +33,7 @@ def _new_line(filename):
             pass
 
 
-def get_env_reqfile(*paths, base_file_name=''):
+def get_env_reqfile( *paths, **kw):
     """
         from the list of paths return the one that exists. If it doesn't exists then create with appropriate
         starter line
@@ -45,6 +45,7 @@ def get_env_reqfile(*paths, base_file_name=''):
     Returns:
         str:
     """
+    base_file_name = kw.get('base_file_name', '')
     requirements_dir = os.path.join('requirements', '')
     for path in paths:
         if os.path.exists(path):
@@ -91,11 +92,6 @@ def get_patterns(*envs):
 
     Returns:
         list:
-
-    >>> get_patterns('dev', 'development')
-    ['dev-requirements.txt', 'requirements/dev.txt', 'requirements-dev.txt', 'development-requirements.txt', 'requirements/development.txt', 'requirements-development.txt']
-    >>> get_patterns('base')
-    ['requirements.txt', 'requirements/base.txt']
     """
     patterns = []
     for env in envs:
