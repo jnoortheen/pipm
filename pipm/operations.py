@@ -6,22 +6,17 @@ from pip._internal.utils.misc import get_installed_distributions
 from pip._internal.compat import stdlib_pkgs
 from pip._internal.commands.freeze import DEV_PKGS
 import pkg_resources
+from six.moves import reload_module
 
 DEV_PKGS = DEV_PKGS.union({'pipm', })
 logger = logging.getLogger(__name__)
-try:
-    reload
-except NameError:
-    from importlib import reload
-except ImportError:
-    from imp import reload
 
 STD_PKGS = stdlib_pkgs.union(DEV_PKGS)
 
 
 def get_dependency_links():
     dep_links = []
-    reload(pkg_resources)
+    reload_module(pkg_resources)
 
     for dist in pkg_resources.working_set:
         if dist.has_metadata('dependency_links.txt'):
@@ -55,7 +50,7 @@ def get_distributions():
     Returns:
         dict:
     """
-    reload(pkg_resources)
+    reload_module(pkg_resources)
     return {dist.project_name.lower(): dist for dist in
             get_installed_distributions(local_only=None, skip=STD_PKGS, user_only=None)}
 

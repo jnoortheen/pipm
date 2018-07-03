@@ -51,6 +51,7 @@ setup(
     # tests_require=tests_require,
     install_requires=[
         'pip>=10',
+        'six'
     ]
     # extras_require={
     #     'testing': tests_require,
