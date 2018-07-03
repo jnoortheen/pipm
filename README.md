@@ -102,10 +102,6 @@ affected other than manipulating the requirements files. So when you uninstall `
 git clone git@github.com:jnoortheen/pipm.git
 cd pipm
 pew new pipm -a .
-```
-
-- install development requirements
-```
 pip install -r dev-requirements.txt
 ```
 
@@ -116,12 +112,15 @@ pip install -e .
 
 # Testing
 
-- After installing `text-requirements.txt` just run `invoke test` from the root directory.
+- run `invoke test` from the root directory.
 
-# version compatibility
-the package is versioned in accordance with `pip`. `pipm-9.*` will be compatible with `pip-9` and so on.
+# Version compatibility
+
+the package is versioned in accordance with `pip` major version number. 
+`pipm-9.*` will be compatible with `pip-9` and such.
 
 # Uninstallation Notes
+
 - since pipm overwrites pip executable in path, please make sure that after removing `pipm`, 
 install pip itself with `easy_install`
 
