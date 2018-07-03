@@ -18,7 +18,7 @@ Req = namedtuple('Req', ['name'])
 
 
 def getdists(remove_count=None, **args):
-    with open(os.path.join(os.path.dirname(__file__), 'pkgs.pickle'), 'rb') as f:
+    with open(os.path.join(os.path.dirname(__file__), 'data', 'pkgs.pickle'), 'rb') as f:
         dists = pickle.loads(f.read())  # type: dict
         assert len(dists) == 23
         assert type(dists) == dict
