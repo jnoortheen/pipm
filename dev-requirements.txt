@@ -25,3 +25,8 @@ attrs==17.4.0
 more-itertools==4.1.0
 tox==3.0.0
 virtualenv==16.0.0
+mock==2.0.0
+pbr==4.0.4
+enum34==1.1.6
+funcsigs==1.0.2
+ipaddress==1.0.22
