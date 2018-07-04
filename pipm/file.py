@@ -1,15 +1,15 @@
 from __future__ import absolute_import, unicode_literals
 
 import errno
-import logging
-import os
 from collections import OrderedDict
 
+import logging
+import os
 from pip._internal.download import PipSession, get_file_content
-from pip._internal.req import req_file
+from pip._internal.req import req_file, RequirementSet
 from pip._internal.req.req_install import InstallRequirement
 
-from . import operations
+from . import operations, setup_cfg
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def _new_line(filename):
             pass
 
 
-def get_env_reqfile( *paths, **kw):
+def get_env_reqfile(*paths, **kw):
     """
         from the list of paths return the one that exists. If it doesn't exists then create with appropriate
         starter line
@@ -211,9 +211,13 @@ def _cluster_to_file_reqs(reqs, env):
     return filereqs
 
 
-def save(env='', session=None):
+def save(env='', session=None, user_reqs=None):
     """
         save installed requirements which is missing in the requirements files
+    Args:
+        env (str):
+        session:
+        user_reqs (RequirementSet): list of strings that are explicitly given as argument to the user installing
     """
     session = session or PipSession()
     reqs = []
@@ -225,14 +229,19 @@ def save(env='', session=None):
         reqs += list(req_file.parse_requirements(file, session=session))
 
     uniq_reqs = _uniq_resources(reqs)
-    file_reqs = _cluster_to_file_reqs(uniq_reqs.values(), env)
+    file_reqs = _cluster_to_file_reqs(list(uniq_reqs.values()), env)
     for filename in get_req_filenames():
         if not file_reqs.get(filename):
             file_reqs[filename] = []
 
-    installations = operations.get_frozen_reqs()
+    if user_reqs:
+        setup_cfg.write_to_setup_cfg(user_reqs, env)
+    write_to_req_files(file_reqs, session, env_filename, uniq_reqs)
 
+
+def write_to_req_files(file_reqs, session, env_filename, uniq_reqs):
     # first step process the requirements and split them into separate for each of the file
+    installations = operations.get_frozen_reqs()
     for filename in file_reqs:  # type: str
         _, content = get_file_content(filename, session=session)
 

@@ -134,7 +134,7 @@ class InstallCommandPlus(install.InstallCommand):
 
         if not hasattr(options, 'no_save'):
             # save changes to file if any
-            file.save(options.req_environment)
+            file.save(env=options.req_environment, user_reqs=result)
 
         return result
 
