@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-__version__ = '10.2.0'
+__version__ = '10.3.0'
 
 from pip import _internal as p
 # import pip as p
