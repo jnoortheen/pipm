@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-__version__ = '10.3.0'
+__version__ = '10.4.0'
 
 from pip import _internal as p
-# import pip as p
 
 # patch for program name
 from pipm.commands import InstallCommandPlus, UninstallCommandPlus, UpdateCommand, FreezeCommandPlus
@@ -16,16 +15,6 @@ def get_prog():
 
 
 p.get_prog = get_prog
-
-# from pip._internal.utils import misc
-# import pip.operations.freeze
-# import pip.utils
-# p.utils.get_prog = get_prog
-
-# from pip._internal import basecommand
-# import pip.basecommand
-# from pip import basecommand
-# p.basecommand.get_prog = get_prog
 
 p.commands_dict[InstallCommandPlus.name] = InstallCommandPlus
 p.commands_dict['i'] = InstallCommandPlus

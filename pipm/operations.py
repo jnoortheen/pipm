@@ -2,7 +2,6 @@ from __future__ import absolute_import
 
 import logging
 from pip._internal.operations.freeze import FrozenRequirement
-from pip._internal.utils.misc import get_installed_distributions
 from pip._internal.compat import stdlib_pkgs
 from pip._internal.commands.freeze import DEV_PKGS
 import pkg_resources
@@ -50,6 +49,8 @@ def get_distributions():
     Returns:
         dict:
     """
+    from pip._internal.utils.misc import get_installed_distributions, pkg_resources
+
     reload_module(pkg_resources)
     return {dist.project_name.lower(): dist for dist in
             get_installed_distributions(local_only=None, skip=STD_PKGS, user_only=None)}
