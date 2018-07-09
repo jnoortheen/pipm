@@ -14,12 +14,16 @@ def _get_existing_reqs(config_dict, base_key, key, reqs):
         if base_key in config_dict and key in config_dict[base_key]:
             existing = config_dict[base_key][key]
         elif '.' in base_key and base_key not in config_dict:
-            part1, part2 = base_key.split('.', 1)
-            if key in config_dict[part1][part2]:
-                existing = config_dict[part1][part2][key]
+            options, extras_require = base_key.split('.', 1)
+            if (options in config_dict
+                    and extras_require in config_dict[options]
+                    and key in config_dict[options][extras_require]):
+                existing = config_dict[options][extras_require][key]
+
         for _req in existing:  # type: str
             if not any((i in _req for i in reqs)):
                 reqs_to_write.append(_req)
+
     return reqs_to_write
 
 

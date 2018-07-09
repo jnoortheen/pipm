@@ -45,3 +45,25 @@ def patch_dists(monkeypatch):
     monkeypatch.setattr(operations, 'get_distributions', getdists)
 
     return monkeypatch
+
+
+@pytest.fixture
+def config():
+    setup_cfg_str = """\
+    [options]
+    install_requires = 
+    	py~=1.5.3
+    """
+    from pipm import setup_cfg
+    config = setup_cfg.configparser.ConfigParser()
+    config.read_string(setup_cfg_str)
+    return config
+
+
+@pytest.fixture
+def config_parsed():
+    return {
+        'options': {
+            'install_requires': ['py~=1.5.3'],
+        }
+    }
