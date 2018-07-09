@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-__version__ = '10.4.0'
-
 from pip import _internal as p
 
 # patch for program name
