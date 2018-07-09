@@ -10,6 +10,7 @@ Python package management workflow using pip, requirements file & setup.cfg as i
 Install from PyPI
 
 ```
+pip install six
 pip install pipm
 ```
 
