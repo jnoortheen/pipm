@@ -1,6 +1,6 @@
 from invoke import task, Context
 
-import pipm
+from pipm import __version__
 
 
 @task
@@ -11,7 +11,7 @@ def release(ctx):
         ctx (Context):
     """
     ctx.run('git push')
-    ctx.run('git tag {}'.format(pipm.__version__))
+    ctx.run('git tag {}'.format(__version__.__version__))
     ctx.run('git push --tags')
 
     # dont forget to have this file
