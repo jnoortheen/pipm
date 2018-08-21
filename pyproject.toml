@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pipm"
-version = "10.4.2"
+version = "10.4.3"
 description = "Wrapper around pip commands to auto-update requirements file"
 authors = ["jnoortheen <jnoortheen@gmail.com>"]
 license = "MIT"
