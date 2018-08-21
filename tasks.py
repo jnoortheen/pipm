@@ -2,16 +2,14 @@ from invoke import task, Context
 
 
 @task
-def release(ctx):
+def release(ctx, version):
     """
         create new tag and push to git and PyPI
     Args:
         ctx (Context):
     """
-    from pipm import __version__
-
     ctx.run("git push")
-    ctx.run("git tag {}".format(__version__.__version__))
+    ctx.run("git tag {}".format(version))
     ctx.run("git push --tags")
 
     # dont forget to have this file
@@ -24,7 +22,8 @@ def release(ctx):
     # repository: https://upload.pypi.org/legacy/
     # username: jnoortheen
     # password: pwd
-    ctx.run("python setup.py sdist upload")
+    # poetry config http-basic.pypi jnoortheen pwd
+    ctx.run("poetry publish")
 
 
 @task
