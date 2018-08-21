@@ -28,6 +28,8 @@ pytest-sugar = "^0.9.1"
 pytest-mock = "^1.10"
 tox = "^3.2"
 pylint = "^2.1"
+mock = "^2.0"
+invoke = "^1.1"
 
 [tool.poetry.scripts]
 pipm = 'pipm:main'
