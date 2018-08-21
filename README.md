@@ -24,14 +24,14 @@ pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 - This tool manipulates all your requirements file. So be sure to use version control software or take backup of your files to keep track of changes. 
 
 # Quickstart
-All `pip` commands will work as it is, plus they will be saved to the requirements file. Both `pip` and `pipm` command
-will work as the same. For some reason, if the pip command is not overridden, you could always rely on `pipm`.   
+Both `pip` and `pipm` command will work as the same. Create an alias as `alias pip=pipm` and you are good to go.   
 
 ### install all your dependencies from the requirements file
 
 - to install only from `requirements.txt` 
 
 ```pipm install```
+
 - to install from all `*requirements*.txt`
 
 ```pipm install --all```
@@ -127,16 +127,6 @@ pip install -e .
 the package is versioned in accordance with `pip` major version number. 
 `pipm-9.*` will be compatible with `pip-9` and such.
 
-# Uninstallation Notes
-
-- since pipm overwrites pip executable in path, please make sure that after removing `pipm`, 
-install pip itself with `easy_install`
-
-```commandline
-pip uninstall pipm
-easy_install pip
-```
-
 # Alternatives and their problems (IMHO)
 
 1. [pipenv](https://docs.pipenv.org/) 
@@ -149,4 +139,3 @@ easy_install pip
     - better than pipenv and do not interfere much in environment management with pew
     - the problems I faced are related to installing dependencies in remote servers/docker environments. 
     As the project matures this problem might get resolved. 
-        
