@@ -168,7 +168,7 @@ class UninstallCommandPlus(UninstallCommand):
 
         res = super(UninstallCommandPlus, self).run(options, (args + list(removable_pkgs)))
 
-        file.save()
+        file.save(uninstall=True)
 
         return res
 

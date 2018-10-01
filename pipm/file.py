@@ -211,7 +211,7 @@ def _cluster_to_file_reqs(reqs, env):
     return filereqs
 
 
-def save(env='', session=None, user_reqs=None):
+def save(env='', session=None, user_reqs=None, uninstall=False):
     """
         save installed requirements which is missing in the requirements files
     Args:
@@ -234,14 +234,17 @@ def save(env='', session=None, user_reqs=None):
         if not file_reqs.get(filename):
             file_reqs[filename] = []
 
-    if user_reqs:
-        setup_cfg.write_to_setup_cfg(user_reqs, env)
-    write_to_req_files(file_reqs, session, env_filename, uniq_reqs)
-
-
-def write_to_req_files(file_reqs, session, env_filename, uniq_reqs):
-    # first step process the requirements and split them into separate for each of the file
     installations = operations.get_frozen_reqs()
+    if user_reqs:
+        setup_cfg.add_requirements(user_reqs, env)
+    if uninstall:
+        setup_cfg.remove_requirements(set(installations.keys()))
+
+    write_to_req_files(file_reqs, session, env_filename, uniq_reqs, installations)
+
+
+def write_to_req_files(file_reqs, session, env_filename, uniq_reqs, installations):
+    # first step process the requirements and split them into separate for each of the file
     for filename in file_reqs:  # type: str
         _, content = get_file_content(filename, session=session)
 

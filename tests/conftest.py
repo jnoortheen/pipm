@@ -3,6 +3,8 @@ import os
 from collections import namedtuple
 
 import pytest
+from typing import List
+
 from pipm import operations
 import pickle
 
@@ -48,22 +50,31 @@ def patch_dists(monkeypatch):
 
 
 @pytest.fixture
-def config():
+def config(chdir):
     setup_cfg_str = """\
-    [options]
-    install_requires = 
-    	py~=1.5.3
-    """
+[options]
+install_requires = 
+	six~=1.11.0
+
+[options.extras_require]
+dev = 
+	pytest~=3.7.2
+"""
     from pipm import setup_cfg
-    config = setup_cfg.configparser.ConfigParser()
-    config.read_string(setup_cfg_str)
-    return config
+    with open(setup_cfg.SETUP_FILE_NAME, "w") as f:
+        f.write(setup_cfg_str)
 
 
 @pytest.fixture
-def config_parsed():
-    return {
-        'options': {
-            'install_requires': ['py~=1.5.3'],
-        }
-    }
+def requirement_set_factory():
+    def _factory(*reqs):
+        # type: (List[str]) -> 'RequirementSet'
+        from pipm.file import RequirementSet, InstallRequirement
+        req_set = RequirementSet()
+
+        for r in reqs:
+            req = InstallRequirement.from_line(r)
+            req.is_direct = True
+            req_set.add_requirement(req)
+        return req_set
+    return _factory
