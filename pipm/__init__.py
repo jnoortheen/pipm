@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import sys
+
 from pip import _internal as p
 
 # patch for program name
@@ -31,6 +33,8 @@ p.commands_dict['u'] = UpdateCommand
 # endpatch
 
 def main():
+    if not hasattr(sys, "real_prefix") or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        raise Exception("Please install `pipm` inside virtualenv")
     p.main()
 
 
