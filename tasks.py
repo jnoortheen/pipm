@@ -8,10 +8,9 @@ def release(ctx):
     Args:
         ctx (Context):
     """
-    from setup import VERSION
-
+    from pipm import __version__
     ctx.run("git push")
-    ctx.run("git tag {}".format(VERSION))
+    ctx.run("git tag {}".format(__version__))
     ctx.run("git push --tags")
 
     # dont forget to have this file

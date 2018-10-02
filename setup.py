@@ -2,8 +2,7 @@ import codecs
 import os
 
 from setuptools import setup, find_packages
-
-VERSION = '18.0.1'
+import pipm
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,7 +15,7 @@ def read(*parts):
 
 setup(
     name="pipm",
-    version=VERSION,
+    version=pipm.__version__,
     description="Wrapper around pip commands to auto-update requirements file",
     long_description=read('README.md'),
     classifiers=[
@@ -43,7 +42,7 @@ setup(
     include_package_data=True,
     entry_points={
         "console_scripts": [
-            "pipm=pipm:main",
+            "pipm=pipm.__main__:main",
         ],
     },
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
