@@ -3,7 +3,7 @@ import os
 
 from setuptools import setup, find_packages
 
-from pipm import __version__
+VERSION = '18.0.1'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,7 +16,7 @@ def read(*parts):
 
 setup(
     name="pipm",
-    version=__version__.__version__,
+    version=VERSION,
     description="Wrapper around pip commands to auto-update requirements file",
     long_description=read('README.md'),
     classifiers=[
