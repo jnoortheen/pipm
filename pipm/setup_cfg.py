@@ -6,7 +6,7 @@ from pip._vendor.packaging.specifiers import SpecifierSet
 from six.moves import configparser
 from typing import Dict, Iterable, Set
 
-SETUP_FILE_NAME = 'setup.cfg'
+SETUP_FILE_NAME = "setup.cfg"
 
 
 def _req_list_to_str(reqs):
@@ -55,11 +55,11 @@ def update_config(config, base_key, key, new_reqs):
 def get_keys(env=None):
     """return key combination for adding new RequirementSet"""
     if env:
-        base_key = 'options.extras_require'
-        key = 'testing' if env and 'test' in env else str(env)
+        base_key = "options.extras_require"
+        key = "testing" if env and "test" in env else str(env)
     else:
-        base_key = 'options'
-        key = 'install_requires'
+        base_key = "options"
+        key = "install_requires"
     return base_key, key
 
 
@@ -72,7 +72,7 @@ def _read_config():
 
 
 def _write_to_file(config):
-    with codecs.open(SETUP_FILE_NAME, 'w') as file_obj:
+    with codecs.open(SETUP_FILE_NAME, "w") as file_obj:
         config.write(file_obj)
 
 
@@ -89,7 +89,7 @@ def add_requirements(user_reqs, env=None):
     for req in user_reqs.requirements.values():  # type: InstallRequirement
         if not req.comes_from:  # add only top-level dependencies
             if not req.req.specifier:
-                req.req.specifier = SpecifierSet('~=' + str(req.installed_version))
+                req.req.specifier = SpecifierSet("~=" + str(req.installed_version))
             reqs[req.req.name] = str(req.req)
     if reqs:
         base_key, key = get_keys(env)

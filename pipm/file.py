@@ -20,15 +20,15 @@ def _new_line(filename):
     Args:
         filename:
     """
-    with open(filename, 'ab+') as f:
+    with open(filename, "ab+") as f:
         # check for empty file
         f.seek(0)
-        if f.read(1) == b'' and f.read() == b'':
+        if f.read(1) == b"" and f.read() == b"":
             return
         try:
             f.seek(-1, os.SEEK_END)
-            if f.read(1) != b'\n':
-                f.write(b'\n')
+            if f.read(1) != b"\n":
+                f.write(b"\n")
         except OSError:
             pass
 
@@ -45,12 +45,12 @@ def get_env_reqfile(*paths, **kw):
     Returns:
         str:
     """
-    base_file_name = kw.get('base_file_name', '')
-    requirements_dir = os.path.join('requirements', '')
+    base_file_name = kw.get("base_file_name", "")
+    requirements_dir = os.path.join("requirements", "")
     for path in paths:
         if os.path.exists(path):
-            if path == 'requirements.txt':
-                base_path = os.path.join('requirements', 'base.txt')
+            if path == "requirements.txt":
+                base_path = os.path.join("requirements", "base.txt")
                 if os.path.exists(base_path):
                     return base_path
             return path
@@ -59,7 +59,7 @@ def get_env_reqfile(*paths, **kw):
     filename = paths[0]  # prefer the first pattern in the list
 
     # if requirements directory exists then prefer creating files inside that one
-    if os.path.exists(os.path.join(os.curdir, 'requirements')):
+    if os.path.exists(os.path.join(os.curdir, "requirements")):
         for path in paths:
             if requirements_dir in path:
                 filename = path
@@ -72,13 +72,15 @@ def get_env_reqfile(*paths, **kw):
                 raise
 
     if not os.path.exists(filename):
-        with open(filename, 'wb') as f:
+        with open(filename, "wb") as f:
             if base_file_name:
                 if filename != base_file_name:
                     f.write(
-                        '-r {}'.format(
-                            'base.txt' if requirements_dir in filename else base_file_name
-                        ).encode('utf-8')
+                        "-r {}".format(
+                            "base.txt"
+                            if requirements_dir in filename
+                            else base_file_name
+                        ).encode("utf-8")
                     )
 
     return filename
@@ -95,14 +97,14 @@ def get_patterns(*envs):
     """
     patterns = []
     for env in envs:
-        patterns.append('{}requirements.txt'.format('' if env == 'base' else env + '-'))
-        patterns.append(os.path.join('requirements', '{}.txt'.format(env)))
-        if env != 'base':
-            patterns.append('requirements-{}.txt'.format(env))
+        patterns.append("{}requirements.txt".format("" if env == "base" else env + "-"))
+        patterns.append(os.path.join("requirements", "{}.txt".format(env)))
+        if env != "base":
+            patterns.append("requirements-{}.txt".format(env))
     return patterns
 
 
-def get_req_filename(env=''):
+def get_req_filename(env=""):
     """
 
     Args:
@@ -114,16 +116,28 @@ def get_req_filename(env=''):
     Returns:
         str:
     """
-    BASE_PTRN = ('base',)
-    DEV_PTRN = ('dev', 'development',)
-    TEST_PTRN = ('test',)
-    PROD_PTRN = ('prod', 'production',)
+    BASE_PTRN = ("base",)
+    DEV_PTRN = ("dev", "development")
+    TEST_PTRN = ("test",)
+    PROD_PTRN = ("prod", "production")
 
-    envs = DEV_PTRN if env == 'dev' else PROD_PTRN if env == 'prod' else TEST_PTRN if env == 'test' else (
-        env,) if env else BASE_PTRN
+    envs = (
+        DEV_PTRN
+        if env == "dev"
+        else PROD_PTRN
+        if env == "prod"
+        else TEST_PTRN
+        if env == "test"
+        else (env,)
+        if env
+        else BASE_PTRN
+    )
     paths = get_patterns(*envs)
 
-    fname = get_env_reqfile(*paths, base_file_name='' if not env else get_env_reqfile(*get_patterns(*BASE_PTRN)))
+    fname = get_env_reqfile(
+        *paths,
+        base_file_name="" if not env else get_env_reqfile(*get_patterns(*BASE_PTRN))
+    )
     _new_line(fname)
     return fname
 
@@ -133,20 +147,20 @@ def get_req_filenames():
     filenames = set()
 
     # if requirements directory exists then add those
-    req_dir = os.path.join(os.curdir, 'requirements')
+    req_dir = os.path.join(os.curdir, "requirements")
     if os.path.exists(req_dir):
         for fn in os.listdir(req_dir):
-            filename = os.path.join('requirements', fn)
+            filename = os.path.join("requirements", fn)
             if os.path.isfile(filename):
-                if filename.endswith('.txt'):
+                if filename.endswith(".txt"):
                     filenames.add(filename)
     else:
         # walk current directory
         for filename in os.listdir(os.curdir):
             if os.path.isfile(filename):
-                if filename.endswith('requirements.txt'):
+                if filename.endswith("requirements.txt"):
                     filenames.add(filename)
-                elif filename.startswith('requirements-'):
+                elif filename.startswith("requirements-"):
                     filenames.add(filename)
 
     return filenames
@@ -164,7 +178,7 @@ def parse_comes_from(comes_from, env):
     """
     if comes_from:
         comes_from = comes_from.split()
-        return comes_from[1], int(comes_from[3].strip(')'))
+        return comes_from[1], int(comes_from[3].strip(")"))
     filename = get_req_filename(env)
     return filename, None
 
@@ -211,7 +225,7 @@ def _cluster_to_file_reqs(reqs, env):
     return filereqs
 
 
-def save(env='', session=None, user_reqs=None, uninstall=False):
+def save(env="", session=None, user_reqs=None, uninstall=False):
     """
         save installed requirements which is missing in the requirements files
     Args:
@@ -269,8 +283,8 @@ def write_to_req_files(file_reqs, session, env_filename, uniq_reqs, installation
                 lines.pop(req.line_num)
 
         # 4. finally write to file
-        with open(filename, 'wb') as f:
+        with open(filename, "wb") as f:
             for line in lines:
                 cnt = lines[line].strip()
                 if cnt:
-                    f.write((cnt + '\n').encode('utf-8'))
+                    f.write((cnt + "\n").encode("utf-8"))

@@ -10,15 +10,17 @@ INTERACTIVE_UPDATE = "--interactive-update"
 
 
 def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
-    parser.values.req_environment = opt_str.strip('-')
+    parser.values.req_environment = opt_str.strip("-")
 
 
 orig_install_given_reqs = install.install_given_reqs
 
 
-def patched_install_given_reqs(to_install, install_options, global_options=(),
-                               *args, **kwargs):
+def patched_install_given_reqs(
+    to_install, install_options, global_options=(), *args, **kwargs
+):
     from pip._internal.utils.logging import indent_log
+
     accepted_reqs = []
     with indent_log():
         confirm_update = INTERACTIVE_UPDATE in install_options
@@ -26,11 +28,15 @@ def patched_install_given_reqs(to_install, install_options, global_options=(),
             install_options.remove(INTERACTIVE_UPDATE)
         for requirement in to_install:
             if confirm_update:
-                want_to_install = input('Do you want to update {}? [Y/n]'.format(requirement.req))
-                if str(want_to_install).lower() in {'no', 'n', }:
+                want_to_install = input(
+                    "Do you want to update {}? [Y/n]".format(requirement.req)
+                )
+                if str(want_to_install).lower() in {"no", "n"}:
                     continue
             accepted_reqs.append(requirement)
-    return orig_install_given_reqs(accepted_reqs, install_options, global_options, *args, **kwargs)
+    return orig_install_given_reqs(
+        accepted_reqs, install_options, global_options, *args, **kwargs
+    )
 
 
 # patch the original function
@@ -50,47 +56,47 @@ class InstallCommandPlus(install.InstallCommand):
         cmd_opts = self.cmd_opts
 
         cmd_opts.add_option(
-            '--dev',
-            dest='req_environment',
-            action='callback',
+            "--dev",
+            dest="req_environment",
+            action="callback",
             callback=store_req_environment,
             help="Save package requirements to `dev-requirements.txt` or `requirements/dev.txt` or"
-                 " `requirements/development.txt`"
+            " `requirements/development.txt`",
         )
 
         cmd_opts.add_option(
-            '--all',
-            dest='req_environment',
-            action='callback',
+            "--all",
+            dest="req_environment",
+            action="callback",
             callback=store_req_environment,
             help="install all requirements from all environments. (E.g. `pipm install --all` will install "
-                 "requirements from all requirements-*.txt files.)"
+            "requirements from all requirements-*.txt files.)",
         )
 
         cmd_opts.add_option(
-            '--test',
-            dest='req_environment',
-            action='callback',
+            "--test",
+            dest="req_environment",
+            action="callback",
             callback=store_req_environment,
             help="Save package requirements to `test-requirements.txt` or `requirements/test.txt` or"
-                 " `requirements/test.txt`"
+            " `requirements/test.txt`",
         )
 
         cmd_opts.add_option(
-            '--prod',
-            dest='req_environment',
-            action='callback',
+            "--prod",
+            dest="req_environment",
+            action="callback",
             callback=store_req_environment,
             help="Save package requirements to `prod-requirements.txt` or `requirements/production.txt` or"
-                 " `requirements/prod.txt`"
+            " `requirements/prod.txt`",
         )
 
         cmd_opts.add_option(
-            '--env',
-            dest='req_environment',
-            action='store',
+            "--env",
+            dest="req_environment",
+            action="store",
             help="Save package requirements to `prod-requirements.txt` or `requirements/production.txt` or"
-                 " `requirements/prod.txt`"
+            " `requirements/prod.txt`",
         )
 
     def parse_args(self, args):
@@ -103,17 +109,19 @@ class InstallCommandPlus(install.InstallCommand):
             options, list:
         """
         options, args = super(InstallCommandPlus, self).parse_args(args)
-        if not options.requirements and ((len(args) == 1 and set(args) == {'--all'}) or not args):
+        if not options.requirements and (
+            (len(args) == 1 and set(args) == {"--all"}) or not args
+        ):
             env = options.req_environment
             upgrade = options.upgrade
 
-            if env == 'all':
+            if env == "all":
                 req_args = []
                 for req in file.get_req_filenames():
-                    req_args.append('-r')
+                    req_args.append("-r")
                     req_args.append(req)
             else:
-                req_args = ['-r', file.get_req_filename(env)]
+                req_args = ["-r", file.get_req_filename(env)]
             options, args = super(InstallCommandPlus, self).parse_args(req_args)
             options.req_environment = env
             options.upgrade = upgrade
@@ -130,9 +138,9 @@ class InstallCommandPlus(install.InstallCommand):
         Returns:
             pip.req.RequirementSet:
         """
-        result = super(InstallCommandPlus, self).run(options, args, )
+        result = super(InstallCommandPlus, self).run(options, args)
 
-        if not hasattr(options, 'no_save'):
+        if not hasattr(options, "no_save"):
             # save changes to file if any
             file.save(env=options.req_environment, user_reqs=result)
 
@@ -163,10 +171,14 @@ class UninstallCommandPlus(UninstallCommand):
         removable_pkgs = get_orphaned_packages(args)
 
         if removable_pkgs:
-            print('Following packages are no longer required by any of the installed packages: \n', '\n'.join(
-                removable_pkgs))
+            print(
+                "Following packages are no longer required by any of the installed packages: \n",
+                "\n".join(removable_pkgs),
+            )
 
-        res = super(UninstallCommandPlus, self).run(options, (args + list(removable_pkgs)))
+        res = super(UninstallCommandPlus, self).run(
+            options, (args + list(removable_pkgs))
+        )
 
         file.save(uninstall=True)
 
@@ -174,13 +186,13 @@ class UninstallCommandPlus(UninstallCommand):
 
 
 class UpdateCommand(InstallCommandPlus):
-    name = 'update'
+    name = "update"
 
     usage = """
           %prog [environment-to-update]
           %prog [package-names-to-update]"""
 
-    summary = 'Update packages (equivalent to that of `install` with --upgrade)'
+    summary = "Update packages (equivalent to that of `install` with --upgrade)"
 
     def __init__(self, *args, **kw):
         """
@@ -194,10 +206,10 @@ class UpdateCommand(InstallCommandPlus):
         cmd_opts = self.cmd_opts
 
         cmd_opts.add_option(
-            '--auto-update',
-            dest='interactive_update',
+            "--auto-update",
+            dest="interactive_update",
             default=True,
-            action='store_false',
+            action="store_false",
             help="Update packages without user input",
         )
 
@@ -210,7 +222,7 @@ class UpdateCommand(InstallCommandPlus):
         Returns:
             options, list:
         """
-        options, args = super(UpdateCommand, self).parse_args(args + ['--upgrade'])
+        options, args = super(UpdateCommand, self).parse_args(args + ["--upgrade"])
         opts = options.install_options or []
         if options.interactive_update:
             opts.append(INTERACTIVE_UPDATE)
