@@ -1,12 +1,14 @@
 from __future__ import absolute_import
 
 import logging
-from pip._internal.operations.freeze import FrozenRequirement
-from pip._internal.compat import stdlib_pkgs
-from pip._internal.commands.freeze import DEV_PKGS
-from pip._internal.utils import misc
-from pip._internal.utils.misc import get_installed_distributions
 import pkg_resources
+from pip._internal.commands.freeze import DEV_PKGS
+from pip._internal.operations.freeze import FrozenRequirement
+from pip._internal.utils import misc
+from pip._internal.utils.compat import stdlib_pkgs
+from pip._internal.utils.misc import (
+    get_installed_distributions,
+)  # needs to be a separate import to mock easily
 from six.moves import reload_module
 
 DEV_PKGS = DEV_PKGS.union({"pipm"})

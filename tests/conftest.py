@@ -1,12 +1,12 @@
-import functools
-import os
 from collections import namedtuple
 
+import functools
+import os
+import pickle
 import pytest
 from typing import List
 
 from pipm import operations
-import pickle
 
 
 @pytest.fixture
@@ -69,12 +69,14 @@ dev =
 def requirement_set_factory():
     def _factory(*reqs):
         # type: (List[str]) -> 'RequirementSet'
-        from pipm.file import RequirementSet, InstallRequirement
+        from pipm.file import RequirementSet
+        from pip._internal.req.constructors import install_req_from_line
         req_set = RequirementSet()
 
         for r in reqs:
-            req = InstallRequirement.from_line(r)
+            req = install_req_from_line(r)
             req.is_direct = True
             req_set.add_requirement(req)
         return req_set
+
     return _factory
