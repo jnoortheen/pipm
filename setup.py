@@ -49,7 +49,8 @@ setup(
     # tests_require=tests_require,
     install_requires=[
         'pip>=18.1',
-        'six'
+        'six',
+        'typing',
     ]
     # extras_require={
     #     'testing': tests_require,
