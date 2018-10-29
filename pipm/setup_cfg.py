@@ -29,7 +29,7 @@ def _req_str_to_list(reqs):
 
 def _req_str_to_dict(config, base_key, key):
     # type: (configparser.ConfigParser, str, str) -> Dict[str, str]
-    reqs = config.get(base_key, key, fallback="")
+    reqs = config.get(base_key, key) if config.has_section(base_key) and config.has_option(base_key, key) else ""
     return dict(map(lambda x: (Requirement(x).name, x), _req_str_to_list(reqs)))
 
 
@@ -43,13 +43,13 @@ def update_config(config, base_key, key, new_reqs):
         new_reqs (Dict[str, str]): a dict of newly installed/updated requirements.
                                 Key is the package name and value is the full name with version and markers
     """
-    if base_key not in config:
+    if not config.has_section(base_key):
         config.add_section(base_key)
 
     reqs = _req_str_to_dict(config, base_key, key)
     reqs.update(new_reqs)
     if reqs:
-        config[base_key][key] = _req_list_to_str(reqs.values())
+        config.set(base_key, key, _req_list_to_str(reqs.values()))
 
 
 def get_keys(env=None):
@@ -103,7 +103,7 @@ def _remove_requirements(config, base_key, key, installed_reqs):
     # check all the sections and remove requirements that are not in the
     reqs = _req_str_to_dict(config, base_key, key)
     filtered = (req for req_name, req in reqs.items() if req_name in installed_reqs)
-    config[base_key][key] = _req_list_to_str(filtered)
+    config.set(base_key, key, _req_list_to_str(filtered))
 
 
 def remove_requirements(installed_reqs):
@@ -116,10 +116,11 @@ def remove_requirements(installed_reqs):
     config = _read_config()
 
     # check all the sections and remove requirements that are not in the
-    _remove_requirements(config, "options", "install_requires", installed_reqs)
-    for name, section in config.items():
-        if "options.extras_require" == name:
-            for key in section.keys():
+    for name in config.sections():
+        if name == "options":
+            _remove_requirements(config, name, "install_requires", installed_reqs)
+        elif name == "options.extras_require":
+            for key in config.options(name):
                 _remove_requirements(config, name, key, installed_reqs)
     _write_to_file(config)
 
