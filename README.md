@@ -24,6 +24,7 @@ pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 - This tool manipulates all your requirements file. So be sure to use version control software or take backup of your files to keep track of changes. 
 
 # Quickstart
+
 Both `pip` and `pipm` command will work as the same. Create an alias as `alias pip=pipm` and you are good to go.   
 
 ### install all your dependencies from the requirements file
@@ -82,7 +83,7 @@ Both `pip` and `pipm` command will work as the same. Create an alias as `alias p
 1. uninstall 
     - a wrapper around standard `pip uninstall` command
     - alias `rm` is available
-    - when uninstalling a package, this command also checks packages that are no longer required by any of the installed
+    - when uninstalling a package, this command also checks packages that are no longer required by any of user installed
     packages and removes them
     - ofcourse it removes the packages from `requirements` files
 
@@ -118,6 +119,8 @@ pip install -r dev-requirements.txt
 pip install -e .
 ```
 
+- Commit message should follow [this](https://udacity.github.io/git-styleguide/) style-guide.
+
 # Testing
 
 - run `invoke test` from the root directory.
@@ -139,3 +142,8 @@ the package is versioned in accordance with `pip` major version number.
     - better than pipenv and do not interfere much in environment management with pew
     - the problems I faced are related to installing dependencies in remote servers/docker environments. 
     As the project matures this problem might get resolved. 
+
+
+# TODOs:
+
+ - rm will check whether a package is present in setup.cfg

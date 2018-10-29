@@ -118,7 +118,8 @@ def remove_requirements(installed_reqs):
     # check all the sections and remove requirements that are not in the
     for name in config.sections():
         if name == "options":
-            _remove_requirements(config, name, "install_requires", installed_reqs)
+            section, option = get_keys()
+            _remove_requirements(config, section, option, installed_reqs)
         elif name == "options.extras_require":
             for key in config.options(name):
                 _remove_requirements(config, name, key, installed_reqs)
