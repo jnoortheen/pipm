@@ -20,7 +20,8 @@ Req = namedtuple('Req', ['name'])
 
 
 def getdists(remove_count=None, **args):
-    with open(os.path.join(os.path.dirname(__file__), 'data', 'pkgs.pickle'), 'rb') as f:
+    """uses picle to get the frozen result packages"""
+    with open(os.path.join(os.path.dirname(__file__), 'data', 'pkgs.proto2.pickle'), 'rb') as f:
         dists = pickle.loads(f.read())  # type: dict
         assert len(dists) == 23
         assert type(dists) == dict
