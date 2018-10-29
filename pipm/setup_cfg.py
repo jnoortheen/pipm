@@ -11,7 +11,7 @@ SETUP_FILE_NAME = "setup.cfg"
 
 def _req_list_to_str(reqs):
     # type: (Iterable) -> str
-    return "".join(map(lambda x: "\n" + x, reqs))
+    return "".join(map(lambda x: "\n" + x, sorted(reqs)))
 
 
 def _req_str_to_list(reqs):
