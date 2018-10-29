@@ -1,4 +1,4 @@
-from invoke import task, Context
+from invoke import task, Context, Result
 
 
 @task
@@ -8,9 +8,14 @@ def release(ctx):
     Args:
         ctx (Context):
     """
+    notes = ctx.run(
+        'git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"%h %s"',
+        hide=True
+    )  # type: Result
     from pipm import __version__
     ctx.run("git push")
-    ctx.run("git tag {}".format(__version__))
+    print("Releasing {}".format(__version__))
+    ctx.run('git tag -a {0} -m "{1}"'.format(__version__, notes.stdout))
     ctx.run("git push --tags")
 
     # dont forget to have this file
