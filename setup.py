@@ -50,7 +50,7 @@ setup(
     install_requires=[
         'pip>=18.1',
         'six',
-        'typing',
+        'typing;python_version<"3.6"',
     ]
     # extras_require={
     #     'testing': tests_require,

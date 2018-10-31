@@ -13,10 +13,8 @@ def release(ctx):
         hide=True
     )  # type: Result
     from pipm import __version__
-    ctx.run("git push")
-    print("Releasing {}".format(__version__))
     ctx.run('git tag -a {0} -m "{1}"'.format(__version__, notes.stdout))
-    ctx.run("git push --tags")
+    ctx.run("git push --follow-tags")
 
     # dont forget to have this file
     # ~/.pypirc
