@@ -10,14 +10,7 @@ Python package management workflow using pip, requirements file & setup.cfg as i
 Install from PyPI
 
 ```
-pip install six
 pip install pipm
-```
-
-Or Install directly from the GitHub
-
-```commandline
-pip install -e git://github.com/jnoortheen/pipm.git@master#egg=pipm
 ```
 
 **Note:**
