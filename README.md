@@ -114,7 +114,7 @@ pip install -e .
 
 - Commit message should follow [this](https://udacity.github.io/git-styleguide/) style-guide.
 
-# Testing
+## Testing
 
 - run `invoke test` from the root directory.
 
