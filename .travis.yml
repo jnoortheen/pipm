@@ -7,3 +7,9 @@ install:
   - pip install -r dev-requirements.txt
 script:
   - pytest
+deploy:
+  provider: pypi
+  user: "jnoortheen"
+  password: $PYPI_PASSWORD
+  on:
+    tags: true

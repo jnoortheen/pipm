@@ -22,12 +22,6 @@ def release(ctx):
     # index-servers =
     #  pypi
 
-    # [pypi]
-    # repository: https://upload.pypi.org/legacy/
-    # username: jnoortheen
-    # password: pwd
-    ctx.run("python setup.py sdist upload")
-
 
 @task
 def test(ctx):
