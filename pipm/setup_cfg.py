@@ -88,7 +88,7 @@ def add_requirements(user_reqs, env=None):
     reqs = {}
     for req in user_reqs.requirements.values():  # type: InstallRequirement
         if not req.comes_from:  # add only top-level dependencies
-            if not req.req.specifier:
+            if not req.req.specifier and req.installed_version:
                 req.req.specifier = SpecifierSet("~=" + str(req.installed_version))
             reqs[req.req.name] = str(req.req)
     if reqs:
