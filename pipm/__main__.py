@@ -41,7 +41,7 @@ p.commands_dict["u"] = UpdateCommand
 
 def main():
     if not hasattr(sys, "real_prefix") or (
-        hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
+            hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
     ):
         raise Exception("Please install `pipm` inside virtualenv")
     p.main()
