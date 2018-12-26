@@ -78,7 +78,8 @@ def _write_to_file(config):
         config.write(file_obj)
 
 
-def get_requirements(env=None) -> dict:
+def get_requirements(env=None):
+    # (str) -> dict
     config = _read_config()
     base_key, key = get_keys(env)
     return _req_str_to_dict(config, base_key, key)
