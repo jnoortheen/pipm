@@ -108,9 +108,6 @@ def get_req_filename(env=""):
     """
 
     Args:
-        dev:
-        test:
-        prod:
         env:
 
     Returns:

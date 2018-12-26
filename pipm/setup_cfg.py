@@ -33,7 +33,7 @@ def _req_str_to_dict(config, base_key, key):
     return dict(map(lambda x: (Requirement(x).name, x), _req_str_to_list(reqs)))
 
 
-def update_config(config, base_key, key, new_reqs):
+def update_config(config, env, new_reqs):
     """
         updates config
     Args:
@@ -43,6 +43,8 @@ def update_config(config, base_key, key, new_reqs):
         new_reqs (Dict[str, str]): a dict of newly installed/updated requirements.
                                 Key is the package name and value is the full name with version and markers
     """
+    base_key, key = get_keys(env)
+
     if not config.has_section(base_key):
         config.add_section(base_key)
 
@@ -76,6 +78,12 @@ def _write_to_file(config):
         config.write(file_obj)
 
 
+def get_requirements(env=None) -> dict:
+    config = _read_config()
+    base_key, key = get_keys(env)
+    return _req_str_to_dict(config, base_key, key)
+
+
 def add_requirements(user_reqs, env=None):
     """
         create/update setup.cfg file
@@ -92,8 +100,7 @@ def add_requirements(user_reqs, env=None):
                 req.req.specifier = SpecifierSet("~=" + str(req.installed_version))
             reqs[req.req.name] = str(req.req)
     if reqs:
-        base_key, key = get_keys(env)
-        update_config(config, base_key, key, reqs)
+        update_config(config, env, reqs)
     _write_to_file(config)
     return config
 

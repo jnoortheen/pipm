@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
 from pip._internal.commands import UninstallCommand, FreezeCommand
-
 from pip._internal.commands import install
+
 from pipm.operations import get_orphaned_packages
 from . import file
 
@@ -17,7 +17,7 @@ orig_install_given_reqs = install.install_given_reqs
 
 
 def patched_install_given_reqs(
-    to_install, install_options, global_options=(), *args, **kwargs
+        to_install, install_options, global_options=(), *args, **kwargs
 ):
     from pip._internal.utils.logging import indent_log
 
@@ -55,62 +55,30 @@ class InstallCommandPlus(install.InstallCommand):
 
         cmd_opts = self.cmd_opts
 
-        cmd_opts.add_option(
-            "--dev",
-            dest="req_environment",
-            action="callback",
-            callback=store_req_environment,
-            help="Save package requirements to `dev-requirements.txt` or `requirements/dev.txt` or"
-            " `requirements/development.txt`",
-        )
-
-        cmd_opts.add_option(
-            "--all",
-            dest="req_environment",
-            action="callback",
-            callback=store_req_environment,
-            help="install all requirements from all environments. (E.g. `pipm install --all` will install "
-            "requirements from all requirements-*.txt files.)",
-        )
-
-        cmd_opts.add_option(
-            "--test",
-            dest="req_environment",
-            action="callback",
-            callback=store_req_environment,
-            help="Save package requirements to `test-requirements.txt` or `requirements/test.txt` or"
-            " `requirements/test.txt`",
-        )
-
-        cmd_opts.add_option(
-            "--prod",
-            dest="req_environment",
-            action="callback",
-            callback=store_req_environment,
-            help="Save package requirements to `prod-requirements.txt` or `requirements/production.txt` or"
-            " `requirements/prod.txt`",
-        )
+        for env, help in (
+                ('all', 'requirements from all environments.'),
+                ('dev', 'work in development environment'),
+                ('test', 'work in testing environment'),
+                ('prod', 'work in production environment'),
+        ):
+            cmd_opts.add_option(
+                "--{}".format(env),
+                dest="req_environment",
+                action="callback",
+                callback=store_req_environment,
+                help=help
+            )
 
         cmd_opts.add_option(
             "--env",
             dest="req_environment",
             action="store",
-            help="Save package requirements to `prod-requirements.txt` or `requirements/production.txt` or"
-            " `requirements/prod.txt`",
+            help="add as seperate set of dependency other than dev/test/prod environments",
         )
 
-    def parse_args(self, args):
-        """
-            when no argument given it fills with `-r requirements.txt` as default
-        Args:
-            args (list):
-
-        Returns:
-            options, list:
-        """
-        options, args = super(InstallCommandPlus, self).parse_args(args)
+    def update_opts_args(self, options, args):
         if not options.requirements and (
-            (len(args) == 1 and set(args) == {"--all"}) or not args
+                (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
             env = options.req_environment
             upgrade = options.upgrade
@@ -127,6 +95,18 @@ class InstallCommandPlus(install.InstallCommand):
             options.upgrade = upgrade
             options.no_save = True
         return options, args
+
+    def parse_args(self, args):
+        """
+            when no argument given it fills with `-r requirements.txt` as default
+        Args:
+            args (list):
+
+        Returns:
+            options, list:
+        """
+        options, args = super(InstallCommandPlus, self).parse_args(args)
+        return self.update_opts_args(options, args)
 
     def run(self, options, args):
         """
@@ -212,6 +192,30 @@ class UpdateCommand(InstallCommandPlus):
             action="store_false",
             help="Update packages without user input",
         )
+
+        cmd_opts.add_option(
+            "--latest",
+            dest="update_to_latest",
+            default=False,
+            action="store_true",
+            help="Update packages to latest version instead of aligning with setup.cfg"
+        )
+
+    def update_opts_args(self, options, args):
+        if not options.requirements and (
+                (len(args) == 1 and set(args) == {"--all"}) or not args
+        ):
+            env = options.req_environment
+            upgrade = options.upgrade
+            to_latest = options.update_to_latest
+
+            from pipm.setup_cfg import get_requirements
+            reqs = get_requirements(env)
+            req_args = list(reqs.keys() if to_latest else reqs.values())
+            options, args = super(InstallCommandPlus, self).parse_args(req_args)
+            options.req_environment = env
+            options.upgrade = upgrade
+        return options, args
 
     def parse_args(self, args):
         """
