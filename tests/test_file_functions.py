@@ -6,7 +6,6 @@ from py._path.local import LocalPath
 
 from pipm import file
 from pipm import operations
-from tests.conftest import getdists
 
 REQS_STR = """\
 # standard package name alone
@@ -145,20 +144,16 @@ def test_get_requirement_files_case2(chdir):
     }
 
 
-def test_file_save_method(patch_dists):
-    def assert_count_to(count):
-        with open(file.get_req_filename()) as f:
-            lines = f.readlines()
-        assert len(lines) == count
-
+def test_file_save_method(chdir, patch_dists):
     # save requirements to file
+    patch_dists()
     file.save()
-    assert_count_to(23)
+    assert len(file.get_parsed_requirements()[1]) == 23
 
     # check it is getting removed
-    patch_dists.setattr(operations, 'get_distributions', functools.partial(getdists, 2))
+    patch_dists(2)
     file.save()
-    assert_count_to(21)
+    assert len(file.get_parsed_requirements()[1]) == 21
 
 
 def test_get_patterns():

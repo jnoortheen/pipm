@@ -19,35 +19,36 @@ def chdir(tmpdir_factory):
 Req = namedtuple('Req', ['name'])
 
 
-def getdists(remove_count=None, **args):
+def _getdists(remove_count=0):
     """uses picle to get the frozen result packages"""
     with open(os.path.join(os.path.dirname(__file__), 'data', 'pkgs.proto2.pickle'), 'rb') as f:
         dists = pickle.loads(f.read())  # type: dict
         assert len(dists) == 23
         assert type(dists) == dict
 
-        if remove_count:
-            cnt = 0
-            for d in list(dists.keys()):
-                cnt += 1
-                dists.pop(d)
-                if cnt >= remove_count:
-                    break
-
-    def dist_requires(d):
-        return [Req('req_by_{}'.format(d)), Req('req_by_others'), ]
-
-    for d in dists:
-        dists[d].requires = functools.partial(dist_requires, d)
-
+        for d in dists:
+            dists[d].requires = lambda: [Req('req_by_{}'.format(d)), Req('req_by_others'), ]
+    if remove_count:
+        cnt = 0
+        for d in list(dists.keys()):
+            cnt += 1
+            dists.pop(d)
+            if cnt >= remove_count:
+                break
     return dists
 
 
 @pytest.fixture
-def patch_dists(monkeypatch):
-    monkeypatch.setattr(operations, 'get_distributions', getdists)
+def patch_dists(mocker):
+    def _patch_dist(remove=0):
+        return mocker.patch.object(operations, 'get_distributions', return_value=_getdists(remove).copy())
 
-    return monkeypatch
+    return _patch_dist
+
+
+@pytest.fixture
+def patched_dists(patch_dists):
+    return patch_dists()
 
 
 @pytest.fixture
