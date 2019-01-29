@@ -24,4 +24,5 @@ def test_get_frozen_reqs(patched_dists):
 
 def test_get_orphaned_packages(patched_dists):
     freqs = operations.get_orphaned_packages(['pytest'])
-    assert set(freqs) == {'atomicwrites', 'attrs', 'more-itertools'}
+    b = {'atomicwrites', 'attrs', 'more-itertools'}
+    assert set(freqs) == b or set(freqs) == b.union("pathlib2")
