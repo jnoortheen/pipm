@@ -28,12 +28,11 @@ def get_dependency_links():
 
 
 def get_frozen_reqs():
-    dependency_links = get_dependency_links()
     installations = {}
 
     for _, dist in get_distributions().items():
         try:
-            req = FrozenRequirement.from_dist(dist, dependency_links)
+            req = FrozenRequirement.from_dist(dist)
         except pkg_resources.RequirementParseError:
             logger.warning("Could not parse requirement: %s", dist.project_name)
             continue
@@ -51,12 +50,7 @@ def get_distributions():
 
     reload_module(misc.pkg_resources)
     reload_module(misc)
-    return {
-        dist.project_name.lower(): dist
-        for dist in get_installed_distributions(
-            local_only=None, skip=STD_PKGS, user_only=None
-        )
-    }
+    return {dist.project_name.lower(): dist for dist in get_installed_distributions(skip=STD_PKGS)}
 
 
 def get_orphaned_packages(pkgs):

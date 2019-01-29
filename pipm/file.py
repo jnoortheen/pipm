@@ -222,22 +222,25 @@ def _cluster_to_file_reqs(reqs, env):
     return filereqs
 
 
-def save(env="", session=None, user_reqs=None, uninstall=False):
+def get_parsed_requirements():
+    session = PipSession()
+    reqs = []
+    for file in get_req_filenames():
+        reqs += list(req_file.parse_requirements(file, session=session))
+    return session, reqs
+
+
+def save(env="", user_reqs=None, uninstall=False):
     """
         save installed requirements which is missing in the requirements files
     Args:
         env (str):
-        session:
         user_reqs (RequirementSet): list of strings that are explicitly given as argument to the user installing
     """
-    session = session or PipSession()
-    reqs = []
+    session, reqs = get_parsed_requirements()
 
     # create base file if it doesnt exists
     env_filename = get_req_filename(env)
-
-    for file in get_req_filenames():
-        reqs += list(req_file.parse_requirements(file, session=session))
 
     uniq_reqs = _uniq_resources(reqs)
     file_reqs = _cluster_to_file_reqs(list(uniq_reqs.values()), env)

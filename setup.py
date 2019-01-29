@@ -48,7 +48,7 @@ setup(
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
     # tests_require=tests_require,
     install_requires=[
-        'pip>=18.1',
+        'pip>=19',
         'six',
         'typing;python_version<"3.6"',
     ]
