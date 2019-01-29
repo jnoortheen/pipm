@@ -17,16 +17,6 @@ logger = logging.getLogger(__name__)
 STD_PKGS = stdlib_pkgs.union(DEV_PKGS)
 
 
-def get_dependency_links():
-    dep_links = []
-    reload_module(pkg_resources)
-
-    for dist in pkg_resources.working_set:
-        if dist.has_metadata("dependency_links.txt"):
-            dep_links.extend(dist.get_metadata_lines("dependency_links.txt"))
-    return dep_links
-
-
 def get_frozen_reqs():
     installations = {}
 

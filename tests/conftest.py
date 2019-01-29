@@ -1,10 +1,9 @@
-from collections import namedtuple
-
-import functools
 import os
 import pickle
-import pytest
+from collections import namedtuple
 from typing import List
+
+import pytest
 
 from pipm import operations
 
@@ -18,16 +17,17 @@ def chdir(tmpdir_factory):
 
 Req = namedtuple('Req', ['name'])
 
+DIST_DATA = os.path.join(os.path.dirname(__file__), 'data', 'pkgs.proto2.pickle')
+DIST_PKG_COUNT = 38
+
 
 def _getdists(remove_count=0):
     """uses picle to get the frozen result packages"""
-    with open(os.path.join(os.path.dirname(__file__), 'data', 'pkgs.proto2.pickle'), 'rb') as f:
+    with open(DIST_DATA, 'rb') as f:
         dists = pickle.loads(f.read())  # type: dict
-        assert len(dists) == 23
+        assert len(dists) == DIST_PKG_COUNT
         assert type(dists) == dict
 
-        for d in dists:
-            dists[d].requires = lambda: [Req('req_by_{}'.format(d)), Req('req_by_others'), ]
     if remove_count:
         cnt = 0
         for d in list(dists.keys()):
@@ -41,7 +41,9 @@ def _getdists(remove_count=0):
 @pytest.fixture
 def patch_dists(mocker):
     def _patch_dist(remove=0):
-        return mocker.patch.object(operations, 'get_distributions', return_value=_getdists(remove).copy())
+        m = mocker.patch.object(operations, 'get_distributions', return_value=_getdists(remove).copy())
+        m.cnt = DIST_PKG_COUNT
+        return m
 
     return _patch_dist
 
