@@ -2,7 +2,7 @@ from invoke import task, Context, Result
 
 
 @task
-def release(ctx):
+def release(ctx, upload=False):
     """
         create new tag and push to git and PyPI
     Args:
@@ -21,6 +21,8 @@ def release(ctx):
     # [distutils]
     # index-servers =
     #  pypi
+    if upload:
+        ctx.run("python setup.py sdist upload")
 
 
 @task
