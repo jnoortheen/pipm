@@ -10,7 +10,7 @@ from . import file
 INTERACTIVE_UPDATE = "--interactive-update"
 
 
-def store_req_environment(option, opt_str, value, parser, *args, **kwargs):
+def store_req_environment(_, opt_str, __, parser, *___, **____):
     parser.values.req_environment = opt_str.strip("-")
 
 
@@ -78,7 +78,6 @@ class InstallCommandPlus(install.InstallCommand):
         )
 
     def update_opts_args(self, options, args):
-        print(options.requirements, args)
         if not options.requirements and (
             (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
@@ -107,7 +106,9 @@ class InstallCommandPlus(install.InstallCommand):
         Returns:
             options, list:
         """
+        print("before ")
         options, args = super(InstallCommandPlus, self).parse_args(args)
+        print("after ")
         return self.update_opts_args(options, args)
 
     def run(self, options, args):
@@ -120,6 +121,8 @@ class InstallCommandPlus(install.InstallCommand):
         Returns:
             pip.req.RequirementSet:
         """
+        print("no run")
+        return
         result = super(InstallCommandPlus, self).run(options, args)
 
         if not hasattr(options, "no_save"):
