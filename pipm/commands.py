@@ -78,23 +78,20 @@ class InstallCommandPlus(install.InstallCommand):
         )
 
     def update_opts_args(self, options, args):
-        if not options.requirements and (
-            (len(args) == 1 and set(args) == {"--all"}) or not args
-        ):
-            env = options.req_environment
-            upgrade = options.upgrade
+        env = options.req_environment
+        upgrade = options.upgrade
 
-            if env == "all":
-                req_args = []
-                for req in file.get_req_filenames():
-                    req_args.append("-r")
-                    req_args.append(req)
-            else:
-                req_args = ["-r", file.get_req_filename(env)]
-            options, args = super(InstallCommandPlus, self).parse_args(req_args)
-            options.req_environment = env
-            options.upgrade = upgrade
-            options.no_save = True
+        if env == "all":
+            req_args = []
+            for req in file.get_req_filenames():
+                req_args.append("-r")
+                req_args.append(req)
+        else:
+            req_args = ["-r", file.get_req_filename(env)]
+        options, args = super(InstallCommandPlus, self).parse_args(req_args)
+        options.req_environment = env
+        options.upgrade = upgrade
+        options.no_save = True
         return options, args
 
     def parse_args(self, args):
@@ -106,10 +103,12 @@ class InstallCommandPlus(install.InstallCommand):
         Returns:
             options, list:
         """
-        print("before ")
         options, args = super(InstallCommandPlus, self).parse_args(args)
-        print("after ")
-        return self.update_opts_args(options, args)
+        if not options.requirements and (
+            (len(args) == 1 and set(args) == {"--all"}) or not args
+        ):
+            options, args = self.update_opts_args(options, args)
+        return options, args
 
     def run(self, options, args):
         """
@@ -121,8 +120,6 @@ class InstallCommandPlus(install.InstallCommand):
         Returns:
             pip.req.RequirementSet:
         """
-        print("no run")
-        return
         result = super(InstallCommandPlus, self).run(options, args)
 
         if not hasattr(options, "no_save"):
@@ -205,20 +202,20 @@ class UpdateCommand(InstallCommandPlus):
         )
 
     def update_opts_args(self, options, args):
-        if not options.requirements and (
-            (len(args) == 1 and set(args) == {"--all"}) or not args
-        ):
-            env = options.req_environment
-            upgrade = options.upgrade
-            to_latest = options.update_to_latest
+        env = options.req_environment
+        upgrade = options.upgrade
+        to_latest = options.update_to_latest
 
-            from pipm.setup_cfg import get_requirements
+        from pipm.setup_cfg import get_requirements
 
-            reqs = get_requirements(env)
-            req_args = list(reqs.keys() if to_latest else reqs.values())
-            options, args = super(InstallCommandPlus, self).parse_args(req_args)
-            options.req_environment = env
-            options.upgrade = upgrade
+        reqs = get_requirements(env)
+
+        req_args = list(reqs.keys() if to_latest else reqs.values())
+        options, args = super(InstallCommandPlus, self).parse_args(
+            req_args
+        )  # call the parent's method and not recursion
+        options.req_environment = env
+        options.upgrade = upgrade
         return options, args
 
     def parse_args(self, args):

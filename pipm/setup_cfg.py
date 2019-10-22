@@ -29,7 +29,11 @@ def _req_str_to_list(reqs):
 
 def _req_str_to_dict(config, base_key, key):
     # type: (configparser.ConfigParser, str, str) -> Dict[str, str]
-    reqs = config.get(base_key, key) if config.has_section(base_key) and config.has_option(base_key, key) else ""
+    reqs = (
+        config.get(base_key, key)
+        if config.has_section(base_key) and config.has_option(base_key, key)
+        else ""
+    )
     return dict(map(lambda x: (Requirement(x).name, x), _req_str_to_list(reqs)))
 
 
