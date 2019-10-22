@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
-from pip._internal.commands import UninstallCommand, FreezeCommand
+from pip._internal.commands.uninstall import UninstallCommand
+from pip._internal.commands.freeze import FreezeCommand
 from pip._internal.commands import install
 
 from pipm.operations import get_orphaned_packages
@@ -166,8 +167,6 @@ class UninstallCommandPlus(UninstallCommand):
 
 
 class UpdateCommand(InstallCommandPlus):
-    name = "update"
-
     usage = """
           %prog [environment-to-update]
           %prog [package-names-to-update]"""
