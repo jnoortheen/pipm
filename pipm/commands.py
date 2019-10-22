@@ -18,7 +18,7 @@ orig_install_given_reqs = install.install_given_reqs
 
 
 def patched_install_given_reqs(
-        to_install, install_options, global_options=(), *args, **kwargs
+    to_install, install_options, global_options=(), *args, **kwargs
 ):
     from pip._internal.utils.logging import indent_log
 
@@ -57,17 +57,17 @@ class InstallCommandPlus(install.InstallCommand):
         cmd_opts = self.cmd_opts
 
         for env, help in (
-                ('all', 'requirements from all environments.'),
-                ('dev', 'work in development environment'),
-                ('test', 'work in testing environment'),
-                ('prod', 'work in production environment'),
+            ("all", "requirements from all environments."),
+            ("dev", "work in development environment"),
+            ("test", "work in testing environment"),
+            ("prod", "work in production environment"),
         ):
             cmd_opts.add_option(
                 "--{}".format(env),
                 dest="req_environment",
                 action="callback",
                 callback=store_req_environment,
-                help=help
+                help=help,
             )
 
         cmd_opts.add_option(
@@ -78,8 +78,9 @@ class InstallCommandPlus(install.InstallCommand):
         )
 
     def update_opts_args(self, options, args):
+        print(options.requirements, args)
         if not options.requirements and (
-                (len(args) == 1 and set(args) == {"--all"}) or not args
+            (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
             env = options.req_environment
             upgrade = options.upgrade
@@ -197,18 +198,19 @@ class UpdateCommand(InstallCommandPlus):
             dest="update_to_latest",
             default=False,
             action="store_true",
-            help="Update packages to latest version instead of aligning with setup.cfg"
+            help="Update packages to latest version instead of aligning with setup.cfg",
         )
 
     def update_opts_args(self, options, args):
         if not options.requirements and (
-                (len(args) == 1 and set(args) == {"--all"}) or not args
+            (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
             env = options.req_environment
             upgrade = options.upgrade
             to_latest = options.update_to_latest
 
             from pipm.setup_cfg import get_requirements
+
             reqs = get_requirements(env)
             req_args = list(reqs.keys() if to_latest else reqs.values())
             options, args = super(InstallCommandPlus, self).parse_args(req_args)
