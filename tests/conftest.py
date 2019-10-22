@@ -10,38 +10,37 @@ from pipm import operations
 
 @pytest.fixture
 def chdir(tmpdir_factory):
-    tmpdir = tmpdir_factory.mktemp('test')
+    tmpdir = tmpdir_factory.mktemp("test")
     os.chdir(tmpdir.strpath)
     return tmpdir
 
 
-Req = namedtuple('Req', ['name'])
+Req = namedtuple("Req", ["name"])
 
-DIST_DATA = os.path.join(os.path.dirname(__file__), 'data', 'pkgs.proto2.pickle')
+DIST_DATA = os.path.join(os.path.dirname(__file__), "data", "pkgs.proto2.pickle")
 DIST_PKG_COUNT = 38
 
 
 def _getdists(remove_count=0):
     """uses picle to get the frozen result packages"""
-    with open(DIST_DATA, 'rb') as f:
+    with open(DIST_DATA, "rb") as f:
         dists = pickle.loads(f.read())  # type: dict
         assert len(dists) == DIST_PKG_COUNT
         assert type(dists) == dict
 
-    if remove_count:
-        cnt = 0
-        for d in list(dists.keys()):
-            cnt += 1
-            dists.pop(d)
-            if cnt >= remove_count:
-                break
+    for cnt, d in enumerate(list(dists.keys())):
+        if cnt >= remove_count:
+            break
+        dists.pop(d)
     return dists
 
 
 @pytest.fixture
 def patch_dists(mocker):
     def _patch_dist(remove=0):
-        m = mocker.patch.object(operations, 'get_distributions', return_value=_getdists(remove).copy())
+        m = mocker.patch.object(
+            operations, "get_distributions", return_value=_getdists(remove).copy()
+        )
         m.cnt = DIST_PKG_COUNT
         return m
 
@@ -65,6 +64,7 @@ dev =
 	pytest~=3.7.2
 """
     from pipm import setup_cfg
+
     with open(setup_cfg.SETUP_FILE_NAME, "w") as f:
         f.write(setup_cfg_str)
 
@@ -75,6 +75,7 @@ def requirement_set_factory():
         # type: (List[str]) -> 'RequirementSet'
         from pipm.file import RequirementSet
         from pip._internal.req.constructors import install_req_from_line
+
         req_set = RequirementSet()
 
         for r in reqs:
