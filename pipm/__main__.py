@@ -5,9 +5,18 @@ from __future__ import absolute_import
 
 import sys
 
-from pip import _internal as p
+from pip._internal.utils import misc
+
+
+def get_prog():
+    return "pipm"
+
 
 # patch for program name
+misc.get_prog = get_prog
+
+from pip._internal import commands, main as pip_main
+
 from pipm.commands import (
     InstallCommandPlus,
     UninstallCommandPlus,
@@ -16,35 +25,30 @@ from pipm.commands import (
 )
 
 
-def get_prog():
-    return "pipm"
+def _update_command_info(cls, *names):
+    old_info = commands.commands_dict.get(names[0])
+    for n in names:
+        commands.commands_dict[n] = commands.CommandInfo(
+            cls.__module__, cls.__name__, old_info.summary if old_info else cls.summary
+        )
 
 
-p.get_prog = get_prog
-
-p.commands_dict[InstallCommandPlus.name] = InstallCommandPlus
-p.commands_dict["i"] = InstallCommandPlus
-
-p.commands_dict[UninstallCommandPlus.name] = UninstallCommandPlus
-p.commands_dict["rm"] = UninstallCommandPlus
-
-p.commands_dict[FreezeCommandPlus.name] = FreezeCommandPlus
-p.commands_dict["save"] = FreezeCommandPlus
-
-p.commands_dict["update"] = UpdateCommand
-p.commands_dict["upgrade"] = UpdateCommand
-p.commands_dict["u"] = UpdateCommand
-
-
-# endpatch
+# replace commands
+for args in [
+    (InstallCommandPlus, "install", "i"),
+    (UninstallCommandPlus, "uninstall", "rm"),
+    (FreezeCommandPlus, "freeze", "save"),
+    (UpdateCommand, "update", "upgrade", "u"),
+]:
+    _update_command_info(*args)
 
 
 def main():
     if not hasattr(sys, "real_prefix") or (
-            hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
+        hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
     ):
         raise Exception("Please install `pipm` inside virtualenv")
-    p.main()
+    pip_main.main()
 
 
 if __name__ == "__main__":
