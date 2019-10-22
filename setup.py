@@ -17,7 +17,7 @@ setup(
     name="pipm",
     version=pipm.__version__,
     description="Wrapper around pip commands to auto-update requirements file",
-    long_description=read("README.md"),
+    long_description="Checkout the README https://github.com/jnoortheen/pipm",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
