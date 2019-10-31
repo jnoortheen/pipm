@@ -7,7 +7,7 @@ Python package management workflow using pip, requirements file & setup.cfg as i
 
 # Installation
 
-- Adviced to install only inside virtualenv as this will replace pip executable
+- Adviced to install only inside virtualenv
 
 Install from PyPI
 
