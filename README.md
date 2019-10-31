@@ -51,7 +51,7 @@ Both `pip` and `pipm` command will work as the same. Create an alias as `alias p
 
 ### including development dependencies
 ```pipm install --dev```
-https://github.com/berdario/pew
+
 
 # Usage
 
