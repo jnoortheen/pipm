@@ -55,7 +55,7 @@ Both `pip` and `pipm` command will work as the same. Create an alias as `alias p
 
 # Usage
 
-1. install
+## 1. install
     - a wrapper around standard `pip install` command and accepts all the standard options
     
     Below are the things that `pipm` brings to the table
@@ -75,21 +75,21 @@ Both `pip` and `pipm` command will work as the same. Create an alias as `alias p
         It will search for the matching one in the following pattern `<name>-requirements.txt` or 
         `requirements/<name>.txt` or `requirements-<name>.txt`
 
-1. uninstall 
+## 1. uninstall 
     - a wrapper around standard `pip uninstall` command
     - alias `rm` is available
     - when uninstalling a package, this command also checks packages that are no longer required by any of user installed
     packages and removes them
     - ofcourse it removes the packages from `requirements` files
 
-1. update
+## 1. update
     - new command
     - equivalent to calling `pip install` with `--upgrade` flag
     - update a single package or the whole environment when no argument given.
     - by default the packages are updated interactively
         - set `--auto-update` to disable this
 
-1. save/freeze
+## 1. save/freeze
     - extends the standard freeze command to save the currently installed packages
 
 
@@ -134,8 +134,9 @@ the package is versioned in accordance with `pip` major version number.
 2. [pip-tools](https://github.com/jazzband/pip-tools)
     - another set of files to keep track of, additional commands to remember
 3. [poetry](https://github.com/sdispater/poetry) 
-    - better than pipenv and do not interfere much in environment management with pew
+    - better than pipenv and do not interfere much in environment management with [pew](https://github.com/berdario/pew)
     - the problems I faced are related to installing dependencies in remote servers/docker environments. 
+    - longer install/update times
     As the project matures this problem might get resolved. 
 
 
