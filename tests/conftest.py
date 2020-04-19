@@ -18,7 +18,7 @@ def chdir(tmpdir_factory):
 Req = namedtuple("Req", ["name"])
 
 DIST_DATA = os.path.join(os.path.dirname(__file__), "data", "pkgs.proto2.pickle")
-DIST_PKG_COUNT = 38
+DIST_PKG_COUNT = 37
 
 
 def _getdists(remove_count=0):
