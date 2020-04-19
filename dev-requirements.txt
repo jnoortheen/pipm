@@ -13,11 +13,9 @@ xdis==3.5.5
 PyNaCl==1.1.2
 spark-parser==1.6.1
 py==1.5.4
-pytest==5.4.1
-termcolor==1.1.0
-pytest-sugar==0.9.2
+pytest==4.6.9
 pytest-cov==2.8.1
-pytest-mock==3.1.0
+pytest-mock==2.0.0
 pluggy==0.13.1
 attrs==18.1.0
 more-itertools==4.3.0
@@ -35,3 +33,4 @@ pyparsing==2.3.0
 packaging==18.0
 toml==0.10.0
 wcwidth==0.1.9
+invoke==1.4.1
