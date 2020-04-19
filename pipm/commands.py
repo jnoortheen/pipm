@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import threading
 
 from pip._internal.commands.uninstall import UninstallCommand
 from pip._internal.commands.freeze import FreezeCommand
@@ -9,6 +10,8 @@ from . import file
 
 INTERACTIVE_UPDATE = "--interactive-update"
 
+THREAD_GLOB = threading.local()
+
 
 def store_req_environment(_, opt_str, __, parser, *___, **____):
     parser.values.req_environment = opt_str.strip("-")
@@ -18,25 +21,23 @@ orig_install_given_reqs = install.install_given_reqs
 
 
 def patched_install_given_reqs(
-    to_install, install_options, global_options=(), *args, **kwargs
+        to_install, *args, **kwargs
 ):
     from pip._internal.utils.logging import indent_log
 
     accepted_reqs = []
     with indent_log():
-        confirm_update = INTERACTIVE_UPDATE in install_options
-        if install_options and confirm_update:
-            install_options.remove(INTERACTIVE_UPDATE)
+        confirm_update = getattr(THREAD_GLOB, "interactive_update", False)
         for requirement in to_install:
             if confirm_update:
                 want_to_install = input(
-                    "Do you want to update {}? [Y/n]".format(requirement.req)
+                    "Do you want to update {}? [Y/n]".format(requirement)
                 )
                 if str(want_to_install).lower() in {"no", "n"}:
                     continue
             accepted_reqs.append(requirement)
     return orig_install_given_reqs(
-        accepted_reqs, install_options, global_options, *args, **kwargs
+        accepted_reqs, *args, **kwargs
     )
 
 
@@ -57,10 +58,10 @@ class InstallCommandPlus(install.InstallCommand):
         cmd_opts = self.cmd_opts
 
         for env, help in (
-            ("all", "requirements from all environments."),
-            ("dev", "work in development environment"),
-            ("test", "work in testing environment"),
-            ("prod", "work in production environment"),
+                ("all", "requirements from all environments."),
+                ("dev", "work in development environment"),
+                ("test", "work in testing environment"),
+                ("prod", "work in production environment"),
         ):
             cmd_opts.add_option(
                 "--{}".format(env),
@@ -105,7 +106,7 @@ class InstallCommandPlus(install.InstallCommand):
         """
         options, args = super(InstallCommandPlus, self).parse_args(args)
         if not options.requirements and (
-            (len(args) == 1 and set(args) == {"--all"}) or not args
+                (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
             options, args = self.update_opts_args(options, args)
         return options, args
@@ -228,9 +229,6 @@ class UpdateCommand(InstallCommandPlus):
             options, list:
         """
         options, args = super(UpdateCommand, self).parse_args(args + ["--upgrade"])
-        opts = options.install_options or []
-        if options.interactive_update:
-            opts.append(INTERACTIVE_UPDATE)
-        options.install_options = opts
+        THREAD_GLOB.interactive_update = options.interactive_update
 
         return options, args
