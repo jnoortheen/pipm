@@ -15,7 +15,7 @@ def get_prog():
 # patch for program name
 misc.get_prog = get_prog
 
-from pip._internal import commands, main as pip_main
+from pip._internal import commands
 
 from pipm.commands import (
     InstallCommandPlus,
@@ -43,12 +43,18 @@ for args in [
     _update_command_info(*args)
 
 
+def is_venv():
+    return (hasattr(sys, 'real_prefix') or
+            (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
+
+
+from pip._internal.cli.main import main as pip_main
+
+
 def main():
-    if not hasattr(sys, "real_prefix") or (
-        hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
-    ):
+    if not is_venv():
         raise Exception("Please install `pipm` inside virtualenv")
-    pip_main.main()
+    pip_main()
 
 
 if __name__ == "__main__":

@@ -5,8 +5,9 @@ from collections import OrderedDict
 
 import logging
 import os
-from pip._internal.download import PipSession, get_file_content
+from pip._internal.network.session import PipSession
 from pip._internal.req import req_file, RequirementSet
+from pip._internal.req.req_file import get_file_content
 from pip._internal.req.req_install import InstallRequirement
 
 from . import operations, setup_cfg
