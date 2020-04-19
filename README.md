@@ -88,11 +88,8 @@ the package is versioned in accordance with `pip` major version number.
         It will search for the matching one in the following pattern `<name>-requirements.txt` or
         `requirements/<name>.txt` or `requirements-<name>.txt`
 
-<<<<<<< HEAD
+
 ## 2. uninstall 
-=======
-1. uninstall
->>>>>>> 33acbd9... docs: update README.md
     - a wrapper around standard `pip uninstall` command
     - alias `rm` is available
     - when uninstalling a package, this command also checks packages that are no longer required by any of user installed
