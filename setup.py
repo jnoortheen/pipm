@@ -28,6 +28,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
     keywords="easy_install distutils setuptools egg virtualenv requirements",
@@ -41,7 +42,7 @@ setup(
     entry_points={"console_scripts": ["pipm=pipm.__main__:main"]},
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*",
     # tests_require=tests_require,
-    install_requires=["pip>=19.3.1", "six", 'typing;python_version<"3.6"']
+    install_requires=["pip>=20.0", "six", 'typing;python_version<"3.6"']
     # extras_require={
     #     'testing': tests_require,
     # },
