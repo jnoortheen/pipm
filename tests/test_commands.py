@@ -1,7 +1,8 @@
 from mock import MagicMock
 
 from pipm import commands
-from pipm.file import get_req_filename, get_req_filenames
+from pipm.file import get_req_filenames
+from pipm.file_utils import get_req_filename
 
 
 def test_fill_args_when_no_args_given(chdir):

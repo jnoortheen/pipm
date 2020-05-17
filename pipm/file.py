@@ -6,7 +6,8 @@ from collections import OrderedDict
 
 from pip._internal.network.session import PipSession
 from pip._internal.req import req_file, RequirementSet
-from pip._internal.req.req_file import get_file_content, ParsedRequirement
+from pip._internal.req.constructors import install_req_from_parsed_requirement
+from pip._internal.req.req_file import get_file_content
 from pip._internal.req.req_install import InstallRequirement
 
 from . import operations, setup_cfg
@@ -46,9 +47,9 @@ def get_req_filenames():
 
 
 def _uniq_resources(reqs):
-    # type: (List[ParsedRequirement]) -> Dict[str, ParsedRequirement]
+    # type: (List[InstallRequirement]) -> Dict[str, InstallRequirement]
     uniq_reqs = OrderedDict()
-    for req in reqs:  # type: ParsedRequirement
+    for req in reqs:
         if req.name in uniq_reqs:  # req.name = "xdis"
             old_req = uniq_reqs[req.name]
             if (
@@ -59,22 +60,29 @@ def _uniq_resources(reqs):
     return uniq_reqs
 
 
-def _cluster_to_file_reqs(reqs, env):
-    # type: (List[ParsedRequirement], str) -> Dict[str, List[FileRequirement]]
+def cluster_to_file_reqs(reqs, env):
+    # type: (Dict[str, InstallRequirement], str) -> Dict[str, List[FileRequirement]]
     filereqs = OrderedDefaultDict(list)
-    for req in reqs:  # type: InstallRequirement
+    for req in reqs.values():
         freq = FileRequirement(req, env)
         filereqs[freq.filename].append(freq)
+
+    for filename in get_req_filenames():
+        if not filereqs.get(filename):
+            filereqs[filename] = []
+
     return filereqs
 
 
 def get_parsed_requirements():
-    # type: () -> (PipSession, Dict[str, ParsedRequirement])
+    # type: () -> (PipSession, Dict[str, InstallRequirement])
     session = PipSession()
     reqs = []
     for file in get_req_filenames():
         reqs += list(req_file.parse_requirements(file, session=session))
-    return session, _uniq_resources(reqs)
+
+    inst_reqs = [install_req_from_parsed_requirement(req) for req in reqs]
+    return session, _uniq_resources(inst_reqs)
 
 
 def save(env="", user_reqs=None, uninstall=False):
@@ -84,25 +92,21 @@ def save(env="", user_reqs=None, uninstall=False):
         env (str):
         user_reqs (RequirementSet): list of strings that are explicitly given as argument to the user installing
     """
-    session, reqs = get_parsed_requirements()
-
-    # create base file if it doesnt exists
-    env_filename = get_req_filename(env)
-
-    file_reqs = _cluster_to_file_reqs(list(reqs.values()), env)
-    for filename in get_req_filenames():
-        if not file_reqs.get(filename):
-            file_reqs[filename] = []
 
     if user_reqs:
         setup_cfg.add_requirements(user_reqs, env)
     if uninstall:
         setup_cfg.remove_requirements()
 
-    write_to_req_files(file_reqs, session, env_filename, reqs)
+    write_to_req_files(env)
 
 
-def write_to_req_files(file_reqs, session, env_filename, uniq_reqs):
+def write_to_req_files(env):
+    # create base file if it doesnt exists
+    env_filename = get_req_filename(env)
+    session, reqs = get_parsed_requirements()
+    file_reqs = cluster_to_file_reqs(reqs, env)
+
     installations = operations.get_frozen_reqs()
 
     # first step process the requirements and split them into separate for each of the file
@@ -115,13 +119,13 @@ def write_to_req_files(file_reqs, session, env_filename, uniq_reqs):
 
         # 1. save new requirements
         if filename == env_filename:
-            installed = set(installations.keys()).difference(set(uniq_reqs.keys()))
+            installed = set(installations.keys()).difference(set(reqs.keys()))
             for new_req in installed:
                 line_num = len(lines) + 1
                 lines[line_num] = str(installations[new_req]).strip()
 
         for req in file_reqs[filename]:
-            frozenrequirement = installations.get(req.name)
+            frozenrequirement = installations.get(req.req.name)
             if frozenrequirement:
                 # 2. updates
                 lines[req.line_num] = str(frozenrequirement).strip()

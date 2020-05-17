@@ -11,7 +11,7 @@ from pip._internal.utils.misc import (
 )  # needs to be a separate import to mock easily
 from six.moves import reload_module
 
-DEV_PKGS = DEV_PKGS.union({"pipm"})
+# DEV_PKGS = DEV_PKGS.union({"pipm"})
 logger = logging.getLogger(__name__)
 
 STD_PKGS = stdlib_pkgs.union(DEV_PKGS)
@@ -40,7 +40,10 @@ def get_distributions():
 
     reload_module(misc.pkg_resources)
     reload_module(misc)
-    return {dist.project_name.lower(): dist for dist in get_installed_distributions(skip=STD_PKGS)}
+    return {
+        dist.project_name.lower(): dist
+        for dist in get_installed_distributions(skip=STD_PKGS)
+    }
 
 
 def get_orphaned_packages(pkgs):

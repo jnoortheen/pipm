@@ -1,9 +1,9 @@
 import os
-import pickle
 from collections import namedtuple
 from typing import List
 
 import pytest
+from pip._vendor.pkg_resources import Distribution
 
 from pipm import operations
 
@@ -15,33 +15,38 @@ def chdir(tmpdir_factory):
     return tmpdir
 
 
+DIRNAME = os.path.dirname(__file__)
+DIST_DATA = os.path.join(DIRNAME, "data")
+DIST_PKG_COUNT = 10
+
+
+@pytest.fixture
+def data_dir():
+    dirname = os.path.abspath(os.curdir)
+    os.chdir(DIST_DATA)
+    yield
+    os.chdir(dirname)
+
+
 Req = namedtuple("Req", ["name"])
 
-DIST_DATA = os.path.join(os.path.dirname(__file__), "data", "pkgs.proto2.pickle")
-DIST_PKG_COUNT = 37
 
-
-def _getdists(remove_count=0):
-    """uses picle to get the frozen result packages"""
-    with open(DIST_DATA, "rb") as f:
-        dists = pickle.loads(f.read())  # type: dict
-        assert len(dists) == DIST_PKG_COUNT
-        assert type(dists) == dict
-
-    for cnt, d in enumerate(list(dists.keys())):
-        if cnt >= remove_count:
-            break
-        dists.pop(d)
-    return dists
+def distribution_factory(proj):
+    return Distribution(
+        project_name=proj, location=".venv/lib/python/{}".format(proj), version="1.0.0"
+    )
 
 
 @pytest.fixture
 def patch_dists(mocker):
     def _patch_dist(remove=0):
-        m = mocker.patch.object(
-            operations, "get_distributions", return_value=_getdists(remove).copy()
-        )
-        m.cnt = DIST_PKG_COUNT
+        dists = {}
+        for i in range(DIST_PKG_COUNT - remove):
+            proj = "proj-{}".format(i)
+            dists[proj] = distribution_factory(proj)
+
+        m = mocker.patch.object(operations, "get_distributions", return_value=dists)
+        m.cnt = len(dists)
         return m
 
     return _patch_dist
@@ -70,18 +75,27 @@ dev =
 
 
 @pytest.fixture
-def requirement_set_factory():
+def install_requirement_factory():
+    def _factory(r):
+        from pip._internal.req.constructors import install_req_from_line
+
+        req = install_req_from_line(r)
+        req.is_direct = True
+        return req
+
+    return _factory
+
+
+@pytest.fixture
+def requirement_set_factory(install_requirement_factory):
     def _factory(*reqs):
         # type: (List[str]) -> 'RequirementSet'
         from pipm.file import RequirementSet
-        from pip._internal.req.constructors import install_req_from_line
 
         req_set = RequirementSet()
 
         for r in reqs:
-            req = install_req_from_line(r)
-            req.is_direct = True
-            req_set.add_requirement(req)
+            req_set.add_requirement(install_requirement_factory(r))
         return req_set
 
     return _factory
