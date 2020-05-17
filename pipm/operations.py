@@ -9,6 +9,7 @@ from pip._internal.utils.compat import stdlib_pkgs
 from pip._internal.utils.misc import (
     get_installed_distributions,
 )  # needs to be a separate import to mock easily
+from pip._vendor.pkg_resources import Requirement
 from six.moves import reload_module
 
 # DEV_PKGS = DEV_PKGS.union({"pipm"})
@@ -65,7 +66,7 @@ def get_orphaned_packages(pkgs):
 
     orphaned_pkgs = set()
     for dist in removed_packages:  # type: pkg_resources.DistInfoDistribution
-        for r in dist.requires():
+        for r in dist.requires():  # type: Requirement
             orphaned_pkgs.add(r.name)
 
     all_requires = set()

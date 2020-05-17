@@ -39,12 +39,23 @@ def distribution_factory(proj):
 def patch_dists(mocker):
     def _patch_dist(remove=0):
         dists = {}
-        for i in range(DIST_PKG_COUNT - remove):
+        cnt = DIST_PKG_COUNT - remove
+        for i in range(cnt):
             proj = "proj-{}".format(i)
-            dists[proj] = distribution_factory(proj)
+            dists[proj] = distribution_factory(proj)  # type: Distribution
 
+        # update requires method
+        prev_dist = None
+        for name, dist in dists.items():
+            if prev_dist is None:
+                prev_dist = dist
+            else:
+                mocker.patch.object(
+                    prev_dist, "requires", return_value=[dist.as_requirement()]
+                )
+                prev_dist = dist
         m = mocker.patch.object(operations, "get_distributions", return_value=dists)
-        m.cnt = len(dists)
+        m.cnt = cnt
         return m
 
     return _patch_dist
@@ -91,7 +102,7 @@ def pkg_ir_py(install_requirement_factory):
 
 @pytest.fixture
 def pkg_ir_six(install_requirement_factory):
-    return install_requirement_factory("six==1.11.0")
+    return install_requirement_factory("six~=1.11.0")
 
 
 @pytest.fixture
