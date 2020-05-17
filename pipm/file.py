@@ -5,13 +5,13 @@ import os
 from collections import OrderedDict
 
 from pip._internal.network.session import PipSession
-from pip._internal.req import req_file, RequirementSet
+from pip._internal.req import req_file
 from pip._internal.req.constructors import install_req_from_parsed_requirement
 from pip._internal.req.req_file import get_file_content
 from pip._internal.req.req_install import InstallRequirement
 
 from . import operations, setup_cfg
-from .classes import OrderedDefaultDict, FileRequirement
+from .classes import FileRequirement
 from .file_utils import get_req_filename
 
 try:
@@ -62,9 +62,11 @@ def _uniq_resources(reqs):
 
 def cluster_to_file_reqs(reqs, env):
     # type: (Dict[str, InstallRequirement], str) -> Dict[str, List[FileRequirement]]
-    filereqs = OrderedDefaultDict(list)
+    filereqs = OrderedDict()
     for req in reqs.values():
         freq = FileRequirement(req, env)
+        if freq.filename not in filereqs:  # default
+            filereqs[freq.filename] = []
         filereqs[freq.filename].append(freq)
 
     for filename in get_req_filenames():

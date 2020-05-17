@@ -1,7 +1,6 @@
 import os
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from distutils.dir_util import copy_tree
-from typing import List
 
 import pytest
 from pip._vendor.pkg_resources import Distribution
@@ -38,7 +37,7 @@ def distribution_factory(proj):
 @pytest.fixture
 def patch_dists(mocker):
     def _patch_dist(remove=0):
-        dists = {}
+        dists = OrderedDict()
         cnt = DIST_PKG_COUNT - remove
         for i in range(cnt):
             proj = "proj-{}".format(i)
@@ -103,4 +102,3 @@ def pkg_ir_py(install_requirement_factory):
 @pytest.fixture
 def pkg_ir_six(install_requirement_factory):
     return install_requirement_factory("six~=1.11.0")
-

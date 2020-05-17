@@ -1,17 +1,6 @@
-from collections import OrderedDict
-
 from pip._internal.req import InstallRequirement
+
 from .file_utils import parse_comes_from
-
-
-class OrderedDefaultDict(OrderedDict):
-    def __init__(self, factory, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.factory = factory
-
-    def __missing__(self, key):
-        self[key] = value = self.factory()
-        return value
 
 
 class FileRequirement:

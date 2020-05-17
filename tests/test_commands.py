@@ -1,5 +1,3 @@
-from mock import MagicMock
-
 from pipm import commands
 from pipm.file import get_req_filenames
 from pipm.file_utils import get_req_filename
