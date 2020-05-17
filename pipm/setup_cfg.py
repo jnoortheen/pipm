@@ -1,10 +1,13 @@
 import codecs
 import os
+from typing import Dict, Iterable, Set
+
 from pip._internal.req import InstallRequirement
 from pip._vendor.packaging.requirements import Requirement
 from pip._vendor.packaging.specifiers import SpecifierSet
 from six.moves import configparser
-from typing import Dict, Iterable, Set
+
+from . import operations
 
 SETUP_FILE_NAME = "setup.cfg"
 
@@ -118,13 +121,14 @@ def _remove_requirements(config, base_key, key, installed_reqs):
     config.set(base_key, key, _req_list_to_str(filtered))
 
 
-def remove_requirements(installed_reqs):
+def remove_requirements():
     # type: (Set[str]) -> configparser.ConfigParser
     """
         remove requirements from `setup.cfg` after `pip uninstall`
     Args:
         installed_reqs (set): set of requirements name strings
     """
+    installed_reqs = set(operations.get_frozen_reqs().keys())
     config = _read_config()
 
     # check all the sections and remove requirements that are not in the

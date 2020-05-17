@@ -6,7 +6,7 @@ from pip._internal.commands.freeze import FreezeCommand
 from pip._internal.commands import install
 
 from pipm.operations import get_orphaned_packages
-from . import file
+from . import file, file_utils
 
 INTERACTIVE_UPDATE = "--interactive-update"
 
@@ -20,9 +20,7 @@ def store_req_environment(_, opt_str, __, parser, *___, **____):
 orig_install_given_reqs = install.install_given_reqs
 
 
-def patched_install_given_reqs(
-        to_install, *args, **kwargs
-):
+def patched_install_given_reqs(to_install, *args, **kwargs):
     from pip._internal.utils.logging import indent_log
 
     accepted_reqs = []
@@ -36,9 +34,7 @@ def patched_install_given_reqs(
                 if str(want_to_install).lower() in {"no", "n"}:
                     continue
             accepted_reqs.append(requirement)
-    return orig_install_given_reqs(
-        accepted_reqs, *args, **kwargs
-    )
+    return orig_install_given_reqs(accepted_reqs, *args, **kwargs)
 
 
 # patch the original function
@@ -58,10 +54,10 @@ class InstallCommandPlus(install.InstallCommand):
         cmd_opts = self.cmd_opts
 
         for env, help in (
-                ("all", "requirements from all environments."),
-                ("dev", "work in development environment"),
-                ("test", "work in testing environment"),
-                ("prod", "work in production environment"),
+            ("all", "requirements from all environments."),
+            ("dev", "work in development environment"),
+            ("test", "work in testing environment"),
+            ("prod", "work in production environment"),
         ):
             cmd_opts.add_option(
                 "--{}".format(env),
@@ -88,7 +84,7 @@ class InstallCommandPlus(install.InstallCommand):
                 req_args.append("-r")
                 req_args.append(req)
         else:
-            req_args = ["-r", file.get_req_filename(env)]
+            req_args = ["-r", file_utils.get_req_filename(env)]
         options, args = super(InstallCommandPlus, self).parse_args(req_args)
         options.req_environment = env
         options.upgrade = upgrade
@@ -106,7 +102,7 @@ class InstallCommandPlus(install.InstallCommand):
         """
         options, args = super(InstallCommandPlus, self).parse_args(args)
         if not options.requirements and (
-                (len(args) == 1 and set(args) == {"--all"}) or not args
+            (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
             options, args = self.update_opts_args(options, args)
         return options, args
