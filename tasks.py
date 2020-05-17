@@ -2,6 +2,11 @@ from invoke import task, Context, Result
 
 
 @task
+def pkg_release(c):
+    c.run("python setup.py sdist bdist_wheel upload")
+
+
+@task
 def release(c, upload=False):
     """
         create new tag and push to git and PyPI
@@ -23,7 +28,7 @@ def release(c, upload=False):
     # index-servers =
     #  pypi
     if upload:
-        c.run("python setup.py sdist upload")
+        pkg_release(c)
 
 
 @task
