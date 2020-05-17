@@ -23,4 +23,4 @@ class FileRequirement:
         self.line_num = line_num
 
     def __repr__(self):
-        return "Freq<{}>".format(self.req)
+        return "{}".format(self.req)

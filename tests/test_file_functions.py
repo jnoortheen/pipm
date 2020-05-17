@@ -56,17 +56,30 @@ def test_get_req_filename_case2(chdir):
     assert file_utils.get_req_filename() == "requirements/base.txt"
 
 
-def test_cluster_file_reqs(data_dir):
+def test_cluster_file_reqs(data_dir, pkg_ir_py, pkg_ir_six):
+    # requirements from files
     _, reqs = file.get_parsed_requirements()
+
+    # requirements without files
+    reqs[pkg_ir_py.name] = pkg_ir_py
+    reqs[pkg_ir_six.name] = pkg_ir_six
+
     file_reqs = file.cluster_to_file_reqs(reqs, "new")
     assert set(file_reqs.keys()) == {
         "dev-requirements.txt",
         "requirements.txt",
         "new-requirements.txt",
     }
-    assert len(file_reqs["requirements.txt"]) == 5
-    assert len(file_reqs["dev-requirements.txt"]) == 1
-    assert len(file_reqs["new-requirements.txt"]) == 2
+    assert_names(
+        file_reqs["requirements.txt"],
+        ["requests", "FooProject", "pyactlab", "MyProject", "Foo2Project"],
+    )
+    assert_names(file_reqs["dev-requirements.txt"], ["some-content"])
+    assert_names(file_reqs["new-requirements.txt"], ["py", "six"])
+
+
+def assert_names(reqs, expected):
+    assert [req.req.name for req in reqs] == expected
 
 
 def test_parse_comes_from(chdir):
@@ -82,15 +95,10 @@ def test_parse_comes_from_case_nofile(chdir):
     assert line is None
 
 
-def test_uniq_reqs(chdir):
-    InstallRequirement = namedtuple("Req", ["name", "comes_from"])
-    install_reqs = [
-        InstallRequirement("name{}".format(i), "comes_from{}".format(i))
-        for i in range(5)
-    ]
-    ireqs = install_reqs + install_reqs
+def test_uniq_reqs(chdir, pkg_ir_six, pkg_ir_py):
+    ireqs = [pkg_ir_six, pkg_ir_py] + [pkg_ir_six]
     ireqs = file._uniq_resources(ireqs)
-    assert len(ireqs) == 5
+    assert len(ireqs) == 2
 
 
 def test_get_requirement_files(chdir):
@@ -122,14 +130,12 @@ def test_file_save_method(chdir, patch_dists):
     file.save()
     _, reqs = file.get_parsed_requirements()
     assert len(reqs) == m.cnt
-    assert reqs == []
 
     # check it is getting removed
     m = patch_dists(2)
     file.save()
     _, reqs = file.get_parsed_requirements()
-    assert len(reqs) == m.cnt - 2
-    assert reqs == []
+    assert len(reqs) == m.cnt
 
 
 def test_get_patterns():

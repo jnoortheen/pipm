@@ -1,5 +1,6 @@
 import os
 from collections import namedtuple
+from distutils.dir_util import copy_tree
 from typing import List
 
 import pytest
@@ -16,16 +17,13 @@ def chdir(tmpdir_factory):
 
 
 DIRNAME = os.path.dirname(__file__)
-DIST_DATA = os.path.join(DIRNAME, "data")
+DATA_DIR = os.path.join(DIRNAME, "data")
 DIST_PKG_COUNT = 10
 
 
 @pytest.fixture
-def data_dir():
-    dirname = os.path.abspath(os.curdir)
-    os.chdir(DIST_DATA)
-    yield
-    os.chdir(dirname)
+def data_dir(chdir):
+    copy_tree(DATA_DIR, str(chdir))
 
 
 Req = namedtuple("Req", ["name"])
@@ -87,6 +85,16 @@ def install_requirement_factory():
 
 
 @pytest.fixture
+def pkg_ir_py(install_requirement_factory):
+    return install_requirement_factory("py==1.0.0")
+
+
+@pytest.fixture
+def pkg_ir_six(install_requirement_factory):
+    return install_requirement_factory("six==1.11.0")
+
+
+@pytest.fixture
 def requirement_set_factory(install_requirement_factory):
     def _factory(*reqs):
         # type: (List[str]) -> 'RequirementSet'
@@ -95,7 +103,9 @@ def requirement_set_factory(install_requirement_factory):
         req_set = RequirementSet()
 
         for r in reqs:
-            req_set.add_requirement(install_requirement_factory(r))
+            req_set.add_requirement(
+                install_requirement_factory(r) if isinstance(r, str) else r
+            )
         return req_set
 
     return _factory
