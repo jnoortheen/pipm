@@ -1,2 +1,2 @@
 -r dev-requirements.txt
-pip>=20.0
+pip>=20.1

@@ -1,0 +1,6 @@
+discovery:
+  exclusions:
+  - .venv/
+  - .tox/
+engine:
+  runtime: pytest
