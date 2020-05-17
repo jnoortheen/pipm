@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import threading
 
+from pip._internal.cli.cmdoptions import make_target_python
 from pip._internal.commands.uninstall import UninstallCommand
 from pip._internal.commands.freeze import FreezeCommand
 from pip._internal.commands import install
@@ -118,10 +119,24 @@ class InstallCommandPlus(install.InstallCommand):
             pip.req.RequirementSet:
         """
         result = super(InstallCommandPlus, self).run(options, args)
-
         if not hasattr(options, "no_save"):
+            session = self.get_default_session(options)
+            target_python = make_target_python(options)
+            finder = self._build_package_finder(
+                options,
+                session,
+                target_python,
+                ignore_requires_python=options.ignore_requires_python,
+            )
+            user_reqs = self.get_requirements(
+                args,
+                options,
+                finder,
+                session,
+                check_supported_wheels=not options.target_dir,
+            )
             # save changes to file if any
-            file.save(env=options.req_environment, user_reqs=result)
+            file.save(env=options.req_environment, user_reqs=user_reqs)
 
         return result
 

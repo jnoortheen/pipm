@@ -104,19 +104,3 @@ def pkg_ir_py(install_requirement_factory):
 def pkg_ir_six(install_requirement_factory):
     return install_requirement_factory("six~=1.11.0")
 
-
-@pytest.fixture
-def requirement_set_factory(install_requirement_factory):
-    def _factory(*reqs):
-        # type: (List[str]) -> 'RequirementSet'
-        from pipm.file import RequirementSet
-
-        req_set = RequirementSet()
-
-        for r in reqs:
-            req_set.add_requirement(
-                install_requirement_factory(r) if isinstance(r, str) else r
-            )
-        return req_set
-
-    return _factory

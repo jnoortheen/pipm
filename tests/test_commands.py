@@ -92,8 +92,7 @@ def test_install_cmd_run(mocker):
 
     # run method
     cmd = commands.InstallCommandPlus("i", "i")
-    opts, args = cmd.parse_args(["dev"])
-    cmd.run(opts, args)
+    cmd.main(["--dev", "pkg"])
 
     run.assert_called_once()
     save.assert_called_once()

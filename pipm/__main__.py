@@ -35,7 +35,7 @@ def _update_command_info(cls, *names):
 
 # replace commands
 for args in [
-    (InstallCommandPlus, "install", "i"),
+    (InstallCommandPlus, "install", "i", "add"),
     (UninstallCommandPlus, "uninstall", "rm"),
     (FreezeCommandPlus, "freeze", "save"),
     (UpdateCommand, "update", "upgrade", "u"),
@@ -44,8 +44,9 @@ for args in [
 
 
 def is_venv():
-    return (hasattr(sys, 'real_prefix') or
-            (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
+    return hasattr(sys, "real_prefix") or (
+        hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
+    )
 
 
 from pip._internal.cli.main import main as pip_main

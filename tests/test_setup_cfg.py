@@ -3,13 +3,13 @@ from pytest import fixture
 
 
 @fixture
-def req_set_py(requirement_set_factory, pkg_ir_py):
-    return requirement_set_factory(pkg_ir_py)
+def req_set_py(pkg_ir_py):
+    return [pkg_ir_py]
 
 
 @fixture
-def req_set_py_six(requirement_set_factory, pkg_ir_py, pkg_ir_six):
-    return requirement_set_factory(pkg_ir_py, pkg_ir_six)
+def req_set_py_six(pkg_ir_py, pkg_ir_six):
+    return [pkg_ir_py, pkg_ir_six]
 
 
 def test_add_requirements_with_existing_config(config, req_set_py):

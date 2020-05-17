@@ -2,14 +2,14 @@ import codecs
 import os
 
 try:
-    from typing import Dict, Iterable, Set
+    from typing import Dict, Iterable, Set, List
 except ImportError:
     pass
 
 from pip._internal.req import InstallRequirement
 from pip._vendor.packaging.requirements import Requirement
 from pip._vendor.packaging.specifiers import SpecifierSet
-from six.moves import configparser
+from six.moves.configparser import ConfigParser
 
 from . import operations
 
@@ -35,7 +35,7 @@ def _req_str_to_list(reqs):
 
 
 def _req_str_to_dict(config, base_key, key):
-    # type: (configparser.ConfigParser, str, str) -> Dict[str, str]
+    # type: (ConfigParser, str, str) -> Dict[str, str]
     reqs = (
         config.get(base_key, key)
         if config.has_section(base_key) and config.has_option(base_key, key)
@@ -48,7 +48,7 @@ def update_config(config, env, new_reqs):
     """
         updates config
     Args:
-        config (configparser.ConfigParser): parsed config file
+        config (ConfigParser): parsed config file
         base_key (str): i.e. options, options.extra_requires
         key (str):
         new_reqs (Dict[str, str]): a dict of newly installed/updated requirements.
@@ -78,7 +78,7 @@ def get_keys(env=None):
 
 def _read_config():
     """read from existing file"""
-    config = configparser.ConfigParser()
+    config = ConfigParser()
     if os.path.exists(SETUP_FILE_NAME):
         config.read(SETUP_FILE_NAME)
     return config
@@ -97,16 +97,17 @@ def get_requirements(env=None):
 
 
 def add_requirements(user_reqs, env=None):
+    # type: (List[InstallRequirement], str) -> ConfigParser
     """
         create/update setup.cfg file
     Args:
-        user_reqs (RequirementSet): list of user requirements
+        user_reqs: list of user requirements
         file_obj: file object to write to
     """
     config = _read_config()
 
     reqs = {}
-    for req in user_reqs.requirements.values():  # type: InstallRequirement
+    for req in user_reqs:  # type: InstallRequirement
         if not req.comes_from:  # add only top-level dependencies
             if not req.req.specifier and req.installed_version:
                 req.req.specifier = SpecifierSet("~=" + str(req.installed_version))
@@ -126,7 +127,7 @@ def _remove_requirements(config, base_key, key, installed_reqs):
 
 
 def remove_requirements(installed_reqs=None):
-    # type: (Set[str]) -> configparser.ConfigParser
+    # type: (Set[str]) -> ConfigParser
     """
         remove requirements from `setup.cfg` after `pip uninstall`
     Args:

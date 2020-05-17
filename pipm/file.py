@@ -86,13 +86,12 @@ def get_parsed_requirements():
 
 
 def save(env="", user_reqs=None, uninstall=False):
+    # type: (str, List[InstallRequirement], bool) -> None
     """
         save installed requirements which is missing in the requirements files
     Args:
-        env (str):
-        user_reqs (RequirementSet): list of strings that are explicitly given as argument to the user installing
+        user_reqs: list of strings that are explicitly given as argument to the user installing
     """
-
     if user_reqs:
         setup_cfg.add_requirements(user_reqs, env)
     if uninstall:
