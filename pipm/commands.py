@@ -133,7 +133,6 @@ class InstallCommandPlus(install.InstallCommand):
                 options,
                 finder,
                 session,
-                check_supported_wheels=not options.target_dir,
             )
             # save changes to file if any
             file.save(env=options.req_environment, user_reqs=user_reqs)
