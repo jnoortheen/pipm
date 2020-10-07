@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/jnoortheen/pipm.svg?branch=master)](https://travis-ci.com/jnoortheen/pipm)
 
 Python package management workflow using pip, requirements file & setup.cfg as its metadata.
-(For the time being, for old world of 🐍)
+(For the time being, for the old world of 🐍)
 
 # Installation
 
