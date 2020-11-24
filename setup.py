@@ -42,7 +42,7 @@ setup(
     entry_points={"console_scripts": ["pipm=pipm.__main__:main"]},
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*",
     # tests_require=tests_require,
-    install_requires=["pip>=20.2", "six", 'typing;python_version<"3.6"']
+    install_requires=["pip>=20.2.4", "six", 'typing;python_version<"3.6"']
     # extras_require={
     #     'testing': tests_require,
     # },
