@@ -3,7 +3,9 @@ from invoke import task, Context, Result
 
 @task
 def pkg_release(c):
-    c.run("python setup.py sdist bdist_wheel upload")
+    c.run("rm dist/*")
+    c.run("python setup.py sdist bdist_wheel")
+    c.run("twine upload dist/*")
 
 
 @task
