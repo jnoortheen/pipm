@@ -101,6 +101,12 @@ def save(env="", user_reqs=None, uninstall=False):
 
     write_to_req_files(env)
 
+def format_req_str(req) -> str:
+    """includes fix for formatting git url"""
+    res = str(req).strip()
+    if res.startswith("-e git+git@"):
+        res = res.replace("-e git+git@", "-e git+ssh://git@")
+    return res
 
 def write_to_req_files(env):
     # create base file if it doesnt exists
@@ -123,13 +129,13 @@ def write_to_req_files(env):
             installed = set(installations.keys()).difference(set(reqs.keys()))
             for new_req in installed:
                 line_num = len(lines) + 1
-                lines[line_num] = str(installations[new_req]).strip()
+                lines[line_num] = format_req_str(installations[new_req])
 
         for req in file_reqs[filename]:
             frozenrequirement = installations.get(req.req.name)
             if frozenrequirement:
                 # 2. updates
-                lines[req.line_num] = str(frozenrequirement).strip()
+                lines[req.line_num] = format_req_str(frozenrequirement)
             else:
                 # 3. removals
                 lines.pop(req.line_num)
