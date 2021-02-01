@@ -23,8 +23,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Topic :: Software Development :: Build Tools",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -40,9 +38,9 @@ setup(
     packages=find_packages(exclude=["tests*"]),
     include_package_data=True,
     entry_points={"console_scripts": ["pipm=pipm.__main__:main"]},
-    python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*",
+    python_requires="!=3.0.*,!=3.1.*,!=3.2.*",
     # tests_require=tests_require,
-    install_requires=["pip>=20.2.4", "six", 'typing;python_version<"3.6"']
+    install_requires=["pip>=20.1", 'typing;python_version<"3.6"']
     # extras_require={
     #     'testing': tests_require,
     # },
