@@ -5,7 +5,7 @@ from invoke import task, Context, Result
 def pkg_release(c):
     c.run("rm dist/*")
     c.run("python setup.py sdist bdist_wheel")
-    c.run("twine upload dist/*")
+    c.run("twine upload dist/* --verbose")
 
 
 @task
