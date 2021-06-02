@@ -56,6 +56,6 @@ docutils==0.16
 colorama==0.4.4
 certifi==2020.11.8
 SecretStorage==3.2.0
-urllib3==1.26.2
+urllib3==1.26.5
 bleach==3.3.0
 webencodings==0.5.1
