@@ -100,7 +100,6 @@ ENV/
 # mypy
 .mypy_cache/
 
-/.idea/
 /.directory
 .pytest_cache/
 .todos.md
