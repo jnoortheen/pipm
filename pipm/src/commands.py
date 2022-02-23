@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import threading
 
 from pip._internal.cli.cmdoptions import make_target_python
@@ -30,7 +29,7 @@ def patched_install_given_reqs(to_install, *args, **kwargs):
         for requirement in to_install:
             if confirm_update:
                 want_to_install = input(
-                    "Do you want to update {}? [Y/n]".format(requirement)
+                    f"Do you want to update {requirement}? [Y/n]"
                 )
                 if str(want_to_install).lower() in {"no", "n"}:
                     continue
@@ -50,7 +49,7 @@ class InstallCommandPlus(install.InstallCommand):
             *args:
             **kw:
         """
-        super(InstallCommandPlus, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
         cmd_opts = self.cmd_opts
 
@@ -61,7 +60,7 @@ class InstallCommandPlus(install.InstallCommand):
             ("prod", "work in production environment"),
         ):
             cmd_opts.add_option(
-                "--{}".format(env),
+                f"--{env}",
                 dest="req_environment",
                 action="callback",
                 callback=store_req_environment,
@@ -86,7 +85,7 @@ class InstallCommandPlus(install.InstallCommand):
                 req_args.append(req)
         else:
             req_args = ["-r", file_utils.get_req_filename(env)]
-        options, args = super(InstallCommandPlus, self).parse_args(req_args)
+        options, args = super().parse_args(req_args)
         options.req_environment = env
         options.upgrade = upgrade
         options.no_save = True
@@ -101,7 +100,7 @@ class InstallCommandPlus(install.InstallCommand):
         Returns:
             options, list:
         """
-        options, args = super(InstallCommandPlus, self).parse_args(args)
+        options, args = super().parse_args(args)
         if not options.requirements and (
             (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
@@ -118,7 +117,7 @@ class InstallCommandPlus(install.InstallCommand):
         Returns:
             pip.req.RequirementSet:
         """
-        result = super(InstallCommandPlus, self).run(options, args)
+        result = super().run(options, args)
         if not hasattr(options, "no_save"):
             session = self.get_default_session(options)
             target_python = make_target_python(options)
@@ -147,7 +146,7 @@ class FreezeCommandPlus(FreezeCommand):
     """
 
     def run(self, options, args):
-        res = super(FreezeCommandPlus, self).run(options, args)
+        res = super().run(options, args)
 
         file.save()
 
@@ -169,7 +168,7 @@ class UninstallCommandPlus(UninstallCommand):
                 "\n".join(removable_pkgs),
             )
 
-        res = super(UninstallCommandPlus, self).run(
+        res = super().run(
             options, (args + list(removable_pkgs))
         )
 
@@ -192,7 +191,7 @@ class UpdateCommand(InstallCommandPlus):
             *args:
             **kw:
         """
-        super(UpdateCommand, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
         cmd_opts = self.cmd_opts
 
@@ -238,7 +237,7 @@ class UpdateCommand(InstallCommandPlus):
         Returns:
             options, list:
         """
-        options, args = super(UpdateCommand, self).parse_args(args + ["--upgrade"])
+        options, args = super().parse_args(args + ["--upgrade"])
         THREAD_GLOB.interactive_update = options.interactive_update
 
         return options, args

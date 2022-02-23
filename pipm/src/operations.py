@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import logging
 import pkg_resources
 from pip._internal.commands.freeze import DEV_PKGS

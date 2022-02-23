@@ -33,9 +33,9 @@ def get_patterns(*envs):
     patterns = []
     for env in envs:
         patterns.append("{}requirements.txt".format("" if env == "base" else env + "-"))
-        patterns.append(os.path.join("requirements", "{}.txt".format(env)))
+        patterns.append(os.path.join("requirements", f"{env}.txt"))
         if env != "base":
-            patterns.append("requirements-{}.txt".format(env))
+            patterns.append(f"requirements-{env}.txt")
     return patterns
 
 
