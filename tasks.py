@@ -1,3 +1,6 @@
+import glob
+import shutil
+
 from invoke import task, Context, Result
 
 
@@ -36,3 +39,14 @@ def release(c, upload=False):
 @task
 def test(c):
     c.run("pytest --cov=pipm --cov-report term-missing tests/")
+
+
+@task
+def vendor(c):
+    target = "pipm/_vendor"
+    c.run(f"pip install pip --target={target} --upgrade")
+    shutil.rmtree(f"{target}/bin", ignore_errors=True)
+
+    dist = glob.glob(f"{target}/*.dist-info")
+    if dist:
+        shutil.rmtree(dist[0], ignore_errors=True)

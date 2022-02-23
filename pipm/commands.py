@@ -142,8 +142,8 @@ class InstallCommandPlus(install.InstallCommand):
 
 class FreezeCommandPlus(FreezeCommand):
     """
-        A wrapper around standard freeze command that updates currently installed packages to requirement files
-        after showing the packages list in standard output.
+    A wrapper around standard freeze command that updates currently installed packages to requirement files
+    after showing the packages list in standard output.
     """
 
     def run(self, options, args):
@@ -156,8 +156,8 @@ class FreezeCommandPlus(FreezeCommand):
 
 class UninstallCommandPlus(UninstallCommand):
     """
-        a drop-in replacement of pip's uninstall command. It removes the entry from requirements file after a package
-        is removed.
+    a drop-in replacement of pip's uninstall command. It removes the entry from requirements file after a package
+    is removed.
     """
 
     def run(self, options, args):
