@@ -14,10 +14,6 @@ from . import operations, setup_cfg
 from .classes import FileRequirement
 from .file_utils import get_req_filename
 
-try:
-    from typing import List, Dict
-except ImportError:
-    pass
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +43,7 @@ def get_req_filenames():
 
 
 def _uniq_resources(reqs):
-    # type: (List[InstallRequirement]) -> Dict[str, InstallRequirement]
+    # type: (list[InstallRequirement]) -> dict[str, InstallRequirement]
     uniq_reqs = OrderedDict()
     for req in reqs:
         if req.name in uniq_reqs:  # req.name = "xdis"
@@ -61,7 +57,7 @@ def _uniq_resources(reqs):
 
 
 def cluster_to_file_reqs(reqs, env):
-    # type: (Dict[str, InstallRequirement], str) -> Dict[str, List[FileRequirement]]
+    # type: (list[str, InstallRequirement], str) -> dict[str, list[FileRequirement]]
     filereqs = OrderedDict()
     for req in reqs.values():
         freq = FileRequirement(req, env)
@@ -101,12 +97,14 @@ def save(env="", user_reqs=None, uninstall=False):
 
     write_to_req_files(env)
 
+
 def format_req_str(req) -> str:
     """includes fix for formatting git url"""
     res = str(req).strip()
     if res.startswith("-e git+git@"):
         res = res.replace("-e git+git@", "-e git+ssh://git@")
     return res
+
 
 def write_to_req_files(env):
     # create base file if it doesnt exists

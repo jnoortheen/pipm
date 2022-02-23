@@ -1,17 +1,13 @@
 import codecs
 import os
 
-try:
-    from typing import Dict, Iterable, Set, List
-except ImportError:
-    pass
+from six.moves.configparser import ConfigParser
 
 from pip._internal.req import InstallRequirement
 from pip._vendor.packaging.requirements import Requirement
 from pip._vendor.packaging.specifiers import SpecifierSet
-from six.moves.configparser import ConfigParser
-
 from . import operations
+from typing import Iterable
 
 SETUP_FILE_NAME = "setup.cfg"
 
@@ -35,7 +31,7 @@ def _req_str_to_list(reqs):
 
 
 def _req_str_to_dict(config, base_key, key):
-    # type: (ConfigParser, str, str) -> Dict[str, str]
+    # type: (ConfigParser, str, str) -> dict[str, str]
     reqs = (
         config.get(base_key, key)
         if config.has_section(base_key) and config.has_option(base_key, key)
@@ -49,11 +45,10 @@ def update_config(config, env, new_reqs):
         updates config
     Args:
         config (ConfigParser): parsed config file
-        base_key (str): i.e. options, options.extra_requires
-        key (str):
         new_reqs (Dict[str, str]): a dict of newly installed/updated requirements.
                                 Key is the package name and value is the full name with version and markers
     """
+    #         base_key (str): i.e. options, options.extra_requires
     base_key, key = get_keys(env)
 
     if not config.has_section(base_key):
@@ -97,12 +92,11 @@ def get_requirements(env=None):
 
 
 def add_requirements(user_reqs, env=None):
-    # type: (List[InstallRequirement], str) -> ConfigParser
+    # type: (list[InstallRequirement], str) -> ConfigParser
     """
         create/update setup.cfg file
     Args:
         user_reqs: list of user requirements
-        file_obj: file object to write to
     """
     config = _read_config()
 
@@ -127,7 +121,7 @@ def _remove_requirements(config, base_key, key, installed_reqs):
 
 
 def remove_requirements(installed_reqs=None):
-    # type: (Set[str]) -> ConfigParser
+    # type: (set[str]) -> ConfigParser
     """
         remove requirements from `setup.cfg` after `pip uninstall`
     Args:

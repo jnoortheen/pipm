@@ -6,7 +6,7 @@ from pip._internal.commands.uninstall import UninstallCommand
 from pip._internal.commands.freeze import FreezeCommand
 from pip._internal.commands import install
 
-from pipm.operations import get_orphaned_packages
+from .operations import get_orphaned_packages
 from . import file, file_utils
 
 INTERACTIVE_UPDATE = "--interactive-update"

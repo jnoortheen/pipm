@@ -17,7 +17,7 @@ misc.get_prog = get_prog
 
 from pip._internal import commands
 
-from pipm.commands import (
+from pipm.src.commands import (
     InstallCommandPlus,
     UninstallCommandPlus,
     UpdateCommand,
