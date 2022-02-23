@@ -1,5 +1,5 @@
 from pip._internal.operations.freeze import FrozenRequirement
-from pipm import operations
+from pipm.src import operations
 
 
 def test_get_distributions(mocker):

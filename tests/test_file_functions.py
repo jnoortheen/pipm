@@ -2,7 +2,7 @@ import os
 
 from py._path.local import LocalPath
 
-from pipm import file, file_utils
+from pipm.src import file, file_utils
 
 
 def test_append_last_line(tmpdir):
@@ -26,7 +26,8 @@ def test_get_env_reqfile_case2(chdir):
     # case 2: creates file inside folder
     fname = "requirements/some.txt"
     assert fname == file_utils.get_env_reqfile(
-        fname, base_file_name="requirements/base.txt",
+        fname,
+        base_file_name="requirements/base.txt",
     )
     with open(fname) as f:
         cnt = f.read()
@@ -41,7 +42,7 @@ def test_get_req_filename(chdir):
 
 def test_get_req_filename_case2(chdir):
     """
-        test it creates inside requirements directory
+    test it creates inside requirements directory
     """
     file_utils.get_req_filename()  # create requirements.txt
     rb = chdir.mkdir("requirements").join("base.txt")

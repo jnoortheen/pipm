@@ -1,6 +1,8 @@
-from pipm import commands
-from pipm.file import get_req_filenames
-from pipm.file_utils import get_req_filename
+from pipm.src import commands
+from pipm.src.file import get_req_filenames
+from pipm.src.file_utils import get_req_filename
+
+from unittest.mock import MagicMock
 
 
 def test_fill_args_when_no_args_given(chdir):
@@ -83,8 +85,7 @@ def test_update_command_parse_args():
 
 
 def test_install_cmd_run(mocker):
-    """
-    """
+    """ """
     run = mocker.patch.object(commands.install.InstallCommand, "run")  # type: MagicMock
     save = mocker.patch.object(commands.file, "save")  # type: MagicMock
 

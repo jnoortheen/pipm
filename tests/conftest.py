@@ -3,9 +3,13 @@ from collections import namedtuple, OrderedDict
 from distutils.dir_util import copy_tree
 
 import pytest
+
+# patch sys.path
+import pipm  # noqa
+
 from pip._vendor.pkg_resources import Distribution
 
-from pipm import operations
+from pipm.src import operations
 
 
 @pytest.fixture
@@ -76,7 +80,7 @@ install_requires =
 dev = 
 	pytest~=3.7.2
 """
-    from pipm import setup_cfg
+    from pipm.src import setup_cfg
 
     with open(setup_cfg.SETUP_FILE_NAME, "w") as f:
         f.write(setup_cfg_str)

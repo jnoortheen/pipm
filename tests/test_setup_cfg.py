@@ -1,4 +1,4 @@
-from pipm import setup_cfg
+from pipm.src import setup_cfg
 from pytest import fixture
 
 
