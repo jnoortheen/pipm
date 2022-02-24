@@ -2,8 +2,8 @@
 
 [![Build Status](https://travis-ci.com/jnoortheen/pipm.svg?branch=master)](https://travis-ci.com/jnoortheen/pipm)
 
-Python package management workflow using pip, requirements file & setup.cfg as its metadata.
-(for the sake of the old world of 🐍)
+Python package management using pip, requirements file & [setup.cfg](https://setuptools.pypa.io/en/latest/userguide/declarative_config.html).
+
 
 # Installation
 
@@ -56,55 +56,52 @@ pipm update --dev
 
 # Features
 
-1. Just a wrapper around the standard pip's `install/uninstall` command. So all the cli options will work
-2. Handles multiple `requirements` files
-3. No new set of files. requirements files contain pinned dependecies and setup.cfg contain abstract dependencies.
-
-# Version compatibility
-
-the package is versioned in accordance with `pip` major version number.
-`pipm-9.*` will be compatible with `pip-9` and such.
+1. No new set of files. `*-requirements.txt` works like the lockfile with pinned versions 
+2. Just a wrapper around the standard pip's `install/uninstall` command. So all the cli options will work
+3. Handles multiple `requirements` files
+  and [setup.cfg](https://setuptools.pypa.io/en/latest/userguide/declarative_config.html) stores abstract dependencies.
 
 
 # Commands
 
 ## 1. install
-    - a wrapper around standard `pip install` command and accepts all the standard options
+ - a wrapper around standard `pip install` command and accepts all the standard options
 
-    Below are the things that `pipm` brings to the table
+ Below are the things that `pipm` brings to the table
 
-    1. Extra functionality
-        - when package names are given it will be saved to the requirements.txt file in the current directory.
-        If you have `requirements` directory structure with `base.txt` inside then that file will be used. Otherwise it
-        will create one in the current directory.
-        - when no package name is given then it is equivalent to `-r requirements.txt` and it will install all requirements
-        from the current directory
-    1. Additional options:
-        the below saves to file when package name given otherwise equivalent to passing requirements file name.
-        1. `--dev` - saves to development requirements
-        1. `--prod` - saves to production requirements
-        1. `--test` - saves to  testing requirements
-        1. `--env <name>` - if you have any special set of requirements that belong to a separate file you could pass the name here.
-        It will search for the matching one in the following pattern `<name>-requirements.txt` or
-        `requirements/<name>.txt` or `requirements-<name>.txt`
+1. Extra functionality
+    - when package names are given it will be saved to the requirements.txt file in the current directory.
+    If you have `requirements` directory structure with `base.txt` inside then that file will be used. Otherwise it
+    will create one in the current directory.
+    - when no package name is given then it is equivalent to `-r requirements.txt` and it will install all requirements
+    from the current directory
+2. Additional options:
+    It will search for the matching one in the following pattern `<name>-requirements.txt` or
+    `requirements/<name>.txt` or `requirements-<name>.txt`
+    the below saves to file when package name given otherwise equivalent to passing requirements file name.
+   1. `--dev` - saves to development requirements
+   2. `--prod` - saves to production requirements
+   3. `--test` - saves to  testing requirements
+   4. `--doc` - saves to  documentation requirements
+   5. `--env <name>` - if you have any special set of requirements that belong to a separate file you could pass the name here.
 
 
 ## 2. uninstall 
-    - a wrapper around standard `pip uninstall` command
-    - alias `rm` is available
-    - when uninstalling a package, this command also checks packages that are no longer required by any of user installed
-    packages and removes them
-    - ofcourse it removes the packages from `requirements` files
+ - a wrapper around standard `pip uninstall` command
+ - alias `rm` is available
+ - when uninstalling a package, this command also checks packages that are no longer required by any of user installed
+ packages and removes them
+ - ofcourse it removes the packages from `requirements` files
 
 ## 3. update
-    - new command
-    - equivalent to calling `pip install` with `--upgrade` flag
-    - update a single package or the whole environment when no argument given.
-    - by default the packages are updated interactively
-        - set `--auto-update` to disable this
+ - new command
+ - equivalent to calling `pip install` with `--upgrade` flag
+ - update a single package or the whole environment when no argument given.
+ - by default the packages are updated interactively
+     - set `--auto-update` to disable this
 
 ## 4. save/freeze
-    - extends the standard freeze command to save the currently installed packages
+ - extends the standard freeze command to save the currently installed packages
 
 # Development
 - clone the repository and create new virtualenv
