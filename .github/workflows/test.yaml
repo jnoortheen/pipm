@@ -25,4 +25,4 @@ jobs:
           python -m pip install -r test-requirements.txt
       - name: Run Tests
         run: |
-          pytest --cov=pipm --cov-report term-missing tests/
+          pytest --cov=pipm/src --cov-report term-missing tests/
