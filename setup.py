@@ -45,10 +45,5 @@ setup(
     packages=find_packages(exclude=["tests*"]),
     include_package_data=True,
     entry_points={"console_scripts": ["pipm=pipm.__main__:main"]},
-    python_requires="!=3.0.*,!=3.1.*,!=3.2.*",
-    # tests_require=tests_require,
-    install_requires=["pip>=20.1", 'typing;python_version<"3.6"']
-    # extras_require={
-    #     'testing': tests_require,
-    # },
+    python_requires=">=3.6",
 )
