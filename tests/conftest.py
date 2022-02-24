@@ -6,6 +6,9 @@ import pytest
 
 # patch sys.path
 import pipm  # noqa
+import sys
+
+print(f"path: {sys.path} debug")
 
 from pip._internal.metadata.pkg_resources import Distribution
 
