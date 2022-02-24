@@ -17,14 +17,16 @@ def get_version():
 def read(*parts):
     # intentionally *not* adding an encoding option to open, See:
     #   https://github.com/pypa/virtualenv/issues/201#issuecomment-3145690
-    return codecs.open(os.path.join(here, *parts), "r").read()
+    with codecs.open(os.path.join(here, *parts), "r") as fr:
+        return fr.read()
 
 
 setup(
     name="pipm",
     version=get_version(),
     description="Wrapper around pip commands to auto-update requirements file",
-    long_description="Checkout the README https://github.com/jnoortheen/pipm",
+    long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
