@@ -13,7 +13,7 @@ INTERACTIVE_UPDATE = "--interactive-update"
 THREAD_GLOB = threading.local()
 
 
-def store_req_environment(_, opt_str, __, parser, *___, **____):
+def store_req_environment(_, opt_str, __, parser):
     parser.values.req_environment = opt_str.strip("-")
 
 
@@ -21,6 +21,7 @@ orig_install_given_reqs = install.install_given_reqs
 
 
 def patched_install_given_reqs(to_install, *args, **kwargs):
+    """patch it to update interactively"""
     from pip._internal.utils.logging import indent_log
 
     accepted_reqs = []
@@ -28,9 +29,7 @@ def patched_install_given_reqs(to_install, *args, **kwargs):
         confirm_update = getattr(THREAD_GLOB, "interactive_update", False)
         for requirement in to_install:
             if confirm_update:
-                want_to_install = input(
-                    f"Do you want to update {requirement}? [Y/n]"
-                )
+                want_to_install = input(f"Do you want to update {requirement}? [Y/n]")
                 if str(want_to_install).lower() in {"no", "n"}:
                     continue
             accepted_reqs.append(requirement)
@@ -58,6 +57,7 @@ class InstallCommandPlus(install.InstallCommand):
             ("dev", "work in development environment"),
             ("test", "work in testing environment"),
             ("prod", "work in production environment"),
+            ("doc", "work in document environment"),
         ):
             cmd_opts.add_option(
                 f"--{env}",
@@ -168,9 +168,7 @@ class UninstallCommandPlus(UninstallCommand):
                 "\n".join(removable_pkgs),
             )
 
-        res = super().run(
-            options, (args + list(removable_pkgs))
-        )
+        res = super().run(options, (args + list(removable_pkgs)))
 
         file.save(uninstall=True)
 
@@ -216,7 +214,7 @@ class UpdateCommand(InstallCommandPlus):
         upgrade = options.upgrade
         to_latest = options.update_to_latest
 
-        from pipm.setup_cfg import get_requirements
+        from pipm.src.setup_cfg import get_requirements
 
         reqs = get_requirements(env)
 

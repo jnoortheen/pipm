@@ -2,5 +2,6 @@ discovery:
   exclusions:
   - .venv/
   - .tox/
+  - pipm/_vendor
 engine:
   runtime: pytest

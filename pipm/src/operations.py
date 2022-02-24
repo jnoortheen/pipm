@@ -1,11 +1,11 @@
 import logging
+
 import pkg_resources
+
 from pip._internal.commands.freeze import DEV_PKGS
+from pip._internal.metadata import BaseDistribution, get_environment
 from pip._internal.operations.freeze import FrozenRequirement
-from pip._internal.utils import misc
 from pip._internal.utils.compat import stdlib_pkgs
-from pip._vendor.pkg_resources import Requirement
-from six.moves import reload_module
 
 # DEV_PKGS = DEV_PKGS.union({"pipm"})
 logger = logging.getLogger(__name__)
@@ -20,29 +20,28 @@ def get_frozen_reqs():
         try:
             req = FrozenRequirement.from_dist(dist)
         except pkg_resources.RequirementParseError:
-            logger.warning("Could not parse requirement: %s", dist.project_name)
+            logger.warning("Could not parse requirement: %s", dist.canonical_name)
             continue
         installations[req.name] = req
 
     return installations
 
 
-def get_distributions():
-    """
-
-    Returns:
-        dict:
-    """
-
-    reload_module(misc.pkg_resources)
-    reload_module(misc)
-    return {
-        dist.project_name.lower(): dist
-        for dist in get_installed_distributions(skip=STD_PKGS)
-    }
+def _get_distributions():
+    return get_environment(None).iter_installed_distributions()
 
 
-def get_orphaned_packages(pkgs):
+def get_distributions() -> "dict[str, BaseDistribution]":
+    def collect():
+        for dist in _get_distributions():
+            name = dist.canonical_name.lower()
+            if name not in STD_PKGS:
+                yield name, dist
+
+    return dict(collect())
+
+
+def get_orphaned_packages(pkgs: "list[str]"):
     """
         return list of packages that is only required by the pkgs given but not other installed packages
     Args:
@@ -53,20 +52,17 @@ def get_orphaned_packages(pkgs):
     """
 
     dists = get_distributions()
-    removed_packages = []
-    for pkg in pkgs:  # type: str
+    orphaned_pkgs = set()
+    for pkg in pkgs:
         pkgl = pkg.lower()
         if pkgl in dists:
-            removed_packages.append(dists.pop(pkgl))
-
-    orphaned_pkgs = set()
-    for dist in removed_packages:  # type: pkg_resources.DistInfoDistribution
-        for r in dist.requires():  # type: Requirement
-            orphaned_pkgs.add(r.name)
+            removed_pkg = dists.pop(pkgl)
+            for r in removed_pkg.iter_dependencies():
+                orphaned_pkgs.add(r.name)
 
     all_requires = set()
     for dist in dists:
-        for r in dists[dist].requires():
+        for r in dists[dist].iter_dependencies():
             all_requires.add(r.name)
 
     orphaned_pkgs = orphaned_pkgs.difference(all_requires)

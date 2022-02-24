@@ -7,7 +7,7 @@ import pytest
 # patch sys.path
 import pipm  # noqa
 
-from pip._vendor.pkg_resources import Distribution
+from pip._internal.metadata.pkg_resources import Distribution
 
 from pipm.src import operations
 
@@ -32,31 +32,37 @@ def data_dir(chdir):
 Req = namedtuple("Req", ["name"])
 
 
-def distribution_factory(proj):
-    return Distribution(
-        project_name=proj, location=".venv/lib/python/{}".format(proj), version="1.0.0"
-    )
+def distribution_factory(proj, mocker, parent: "Distribution | None" = None):
+    def new_dist():
+        from pip._vendor.pkg_resources import Distribution as PD
+
+        dist = PD(
+            project_name=proj,
+            location=".venv/lib/python/{}".format(proj),
+            version="1.0.0",
+        )
+        if parent is not None:
+            mocker.patch.object(
+                parent._dist,
+                "requires",
+                return_value=[dist.as_requirement()],
+            )
+        return dist
+
+    return Distribution(new_dist())
 
 
 @pytest.fixture
 def patch_dists(mocker):
-    def _patch_dist(remove=0):
+    def _patch_dist(cnt=10):
         dists = OrderedDict()
-        cnt = DIST_PKG_COUNT - remove
-        for i in range(cnt):
-            proj = "proj-{}".format(i)
-            dists[proj] = distribution_factory(proj)  # type: Distribution
 
         # update requires method
         prev_dist = None
-        for name, dist in dists.items():
-            if prev_dist is None:
-                prev_dist = dist
-            else:
-                mocker.patch.object(
-                    prev_dist, "requires", return_value=[dist.as_requirement()]
-                )
-                prev_dist = dist
+        for i in range(cnt):
+            proj = "proj-{}".format(i)
+            dists[proj] = prev_dist = distribution_factory(proj, mocker, prev_dist)
+
         m = mocker.patch.object(operations, "get_distributions", return_value=dists)
         m.cnt = cnt
         return m

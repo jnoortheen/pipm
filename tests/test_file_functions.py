@@ -74,7 +74,7 @@ def test_cluster_file_reqs(data_dir, pkg_ir_py, pkg_ir_six):
         file_reqs["requirements.txt"],
         ["requests", "FooProject", "pyactlab", "MyProject", "Foo2Project"],
     )
-    assert_names(file_reqs["dev-requirements.txt"], ["some-content"])
+    assert_names(file_reqs["dev-requirements.txt"], ["some_content"])
     assert_names(file_reqs["new-requirements.txt"], ["py", "six"])
 
 

@@ -37,7 +37,7 @@ def _update_command_info(cls, *names):
 for args in [
     (InstallCommandPlus, "install", "i", "add"),
     (UninstallCommandPlus, "uninstall", "rm"),
-    (FreezeCommandPlus, "freeze", "save"),
+    (FreezeCommandPlus, "freeze", "save", "lock"),
     (UpdateCommand, "update", "upgrade", "u"),
 ]:
     _update_command_info(*args)
