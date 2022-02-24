@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-__version__ = "22.0.3"
 
 import sys
 from pathlib import Path

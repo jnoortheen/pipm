@@ -103,3 +103,4 @@ ENV/
 /.directory
 .pytest_cache/
 .todos.md
+.DS_Store
