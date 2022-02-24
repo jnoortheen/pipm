@@ -1,3 +1,10 @@
+## 22.2.2 (2022-02-24)
+
+### Fix
+
+- test coverage
+- add pip.*.build module files
+
 ## 22.2.1 (2022-02-24)
 
 ### Fix
