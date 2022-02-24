@@ -1,10 +1,17 @@
 import codecs
 import os
+import json
 
 from setuptools import setup, find_packages
-import pipm
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+
+def get_version():
+    cz_conf = os.path.join(here, ".cz.json")
+    with open(cz_conf) as fr:
+        config = json.loads(fr.read())
+        return config["commitizen"]["version"]
 
 
 def read(*parts):
@@ -15,7 +22,7 @@ def read(*parts):
 
 setup(
     name="pipm",
-    version=pipm.__version__,
+    version=get_version(),
     description="Wrapper around pip commands to auto-update requirements file",
     long_description="Checkout the README https://github.com/jnoortheen/pipm",
     classifiers=[
