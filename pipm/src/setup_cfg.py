@@ -1,13 +1,14 @@
 import codecs
 import os
+from typing import Iterable
 
-from six.moves.configparser import ConfigParser
+from configparser import ConfigParser
 
-from pip._internal.req import InstallRequirement
+from pip._internal.req import InstallRequirement  # noqa
 from pip._vendor.packaging.requirements import Requirement
 from pip._vendor.packaging.specifiers import SpecifierSet
 from . import operations
-from typing import Iterable
+from .operations import get_installed_version
 
 SETUP_FILE_NAME = "setup.cfg"
 
@@ -103,8 +104,9 @@ def add_requirements(user_reqs, env=None):
     reqs = {}
     for req in user_reqs:  # type: InstallRequirement
         if not req.comes_from:  # add only top-level dependencies
-            if not req.req.specifier and req.installed_version:
-                req.req.specifier = SpecifierSet("~=" + str(req.installed_version))
+            installed_version = get_installed_version(req)
+            if not req.req.specifier and installed_version:
+                req.req.specifier = SpecifierSet("~=" + str(installed_version))
             reqs[req.req.name] = str(req.req)
     if reqs:
         update_config(config, env, reqs)

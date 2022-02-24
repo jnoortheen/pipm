@@ -1,7 +1,7 @@
 import glob
 import shutil
 
-from invoke import task, Context, Result
+from invoke import task, Context
 
 
 @task
@@ -18,13 +18,8 @@ def release(c, upload=False):
     Args:
         c (Context):
     """
-    notes = c.run(
-        'git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"%h %s"',
-        hide=True,
-    )  # type: Result
-    from pipm import __version__
 
-    c.run('git tag -a {0} -m "{1}"'.format(__version__, notes.stdout))
+    c.run("cz bump --changelog")
     c.run("git push --follow-tags")
 
     # dont forget to have this file

@@ -1,10 +1,12 @@
 import logging
+from pathlib import Path
 
 import pkg_resources
 
 from pip._internal.commands.freeze import DEV_PKGS
 from pip._internal.metadata import BaseDistribution, get_environment
 from pip._internal.operations.freeze import FrozenRequirement
+from pip._internal.req import InstallRequirement
 from pip._internal.utils.compat import stdlib_pkgs
 
 # DEV_PKGS = DEV_PKGS.union({"pipm"})
@@ -27,6 +29,10 @@ def get_frozen_reqs():
     return installations
 
 
+def get_dist(ireq: InstallRequirement) -> "BaseDistribution":
+    return get_environment(None).get_distribution(ireq.req.name)
+
+
 def _get_distributions():
     return get_environment(None).iter_installed_distributions()
 
@@ -39,6 +45,41 @@ def get_distributions() -> "dict[str, BaseDistribution]":
                 yield name, dist
 
     return dict(collect())
+
+
+def get_comes_from(req):
+    if req.comes_from:
+        if isinstance(req.comes_from, str):
+            comes_from = req.comes_from
+        else:
+            comes_from = req.comes_from.from_path()
+        if comes_from:
+            return f" (from {comes_from})"
+    return ""
+
+
+def get_installed_version(ireq: InstallRequirement):
+    dist = get_dist(ireq)
+    if dist:
+        return str(dist.version)
+
+
+def format_for_display(req: InstallRequirement):
+    def parts():
+        yield str(req.req.name)
+
+        if req.local_file_path:
+            new_version = Path(req.local_file_path).name
+
+            installed = get_installed_version(req)
+            if installed:
+                yield f" ({installed} -> {new_version})"
+            else:
+                yield f" (installs {new_version})"
+
+        yield get_comes_from(req)
+
+    return "".join(parts())
 
 
 def get_orphaned_packages(pkgs: "list[str]"):

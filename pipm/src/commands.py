@@ -5,7 +5,7 @@ from pip._internal.commands.uninstall import UninstallCommand
 from pip._internal.commands.freeze import FreezeCommand
 from pip._internal.commands import install
 
-from .operations import get_orphaned_packages
+from .operations import get_orphaned_packages, format_for_display
 from . import file, file_utils
 
 INTERACTIVE_UPDATE = "--interactive-update"
@@ -29,7 +29,9 @@ def patched_install_given_reqs(to_install, *args, **kwargs):
         confirm_update = getattr(THREAD_GLOB, "interactive_update", False)
         for requirement in to_install:
             if confirm_update:
-                want_to_install = input(f"Do you want to update {requirement}? [Y/n]")
+                want_to_install = input(
+                    f"Do you want to update {format_for_display(requirement)}? [Y/n]"
+                )
                 if str(want_to_install).lower() in {"no", "n"}:
                     continue
             accepted_reqs.append(requirement)
@@ -101,10 +103,10 @@ class InstallCommandPlus(install.InstallCommand):
             options, list:
         """
         options, args = super().parse_args(args)
-        if not options.requirements and (
+        if not options.requirements and (  # noqa
             (len(args) == 1 and set(args) == {"--all"}) or not args
         ):
-            options, args = self.update_opts_args(options, args)
+            options, args = self.update_opts_args(options, args)  # noqa
         return options, args
 
     def run(self, options, args):

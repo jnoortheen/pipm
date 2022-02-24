@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
+import os
+
+os.environ["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
 
 import sys
 
