@@ -9,18 +9,13 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
+/build/
 develop-eggs/
-dist/
+/dist/
 downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+/eggs/
+/.eggs/
+/wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -37,7 +32,7 @@ pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
-.tox/
+/.tox/
 .coverage
 .coverage.*
 .cache
@@ -83,9 +78,9 @@ celerybeat-schedule
 .env
 
 # virtualenv
-.venv
-venv/
-ENV/
+/.venv
+/venv/
+/ENV/
 
 # Spyder project settings
 .spyderproject

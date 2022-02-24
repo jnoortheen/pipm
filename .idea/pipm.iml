@@ -5,6 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$/pipm/_vendor" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/pipm.egg-info" />
       <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
