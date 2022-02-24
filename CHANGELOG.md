@@ -1,3 +1,9 @@
+## 22.2.0 (2022-02-24)
+
+### Feat
+
+- use commitizen to provide setup.py version
+
 ## 22.1.0 (2022-02-24)
 
 ### Refactor
