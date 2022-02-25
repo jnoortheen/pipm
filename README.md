@@ -16,7 +16,7 @@ pip install pipm
 ```
 
 **Note:**
-- This tool manipulates all your requirements file. So be sure to use version control software or take backup of your files to keep track of changes.
+- This tool manipulates all your requirements file. So be sure to use a version control software to keep track of the changes.
 
 # Quickstart
 
