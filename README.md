@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/jnoortheen/pipm.svg?branch=master)](https://travis-ci.com/jnoortheen/pipm)
 
-Python package management using pip, requirements file & [setup.cfg](https://setuptools.pypa.io/en/latest/userguide/declarative_config.html) without reinventing the wheels.
+Python package management using pip, requirements file & [setup.cfg](https://setuptools.pypa.io/en/latest/userguide/declarative_config.html).
 
 
 # Installation
