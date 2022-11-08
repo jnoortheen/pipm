@@ -1,3 +1,10 @@
+
+**Deprecation Notice**: Since the introduction of [PEP-621](https://peps.python.org/pep-0621/), it is advised to use `pyproject.toml` to store the Project's meta-data. Here are some project supporting `PEP-621`
+  - [pdm](https://github.com/pdm-project/pdm)
+  - [pip-tools](https://github.com/jazzband/pip-tools)
+  - [hatch](https://github.com/pypa/hatch)
+
+
 # pipm
 
 [![Build Status](https://travis-ci.com/jnoortheen/pipm.svg?branch=master)](https://travis-ci.com/jnoortheen/pipm)
@@ -124,24 +131,6 @@ pip install -e .
 
 - run `invoke test` from the root directory.
 
-
-# Alternatives and their problems (IMHO)
-
-1. [pipenv](https://docs.pipenv.org/)
-    - good for local development with only one virtual environment per project
-    - Not good when we need to deploy over production server or keep multiple virtuals-envs
-    - it is better to use `pew` alone instead of the shell command that comes with this
-2. [pip-tools](https://github.com/jazzband/pip-tools)
-    - another set of files to keep track of, additional commands to remember
-3. [poetry](https://github.com/sdispater/poetry) 
-    - more robust than `pipenv`
-    - ~~the problems I faced are related to installing dependencies in remote servers/docker environments. ~~
-    - ~~longer install/update times~~
-    ~~As the project matures this problem might get resolved. ~~
-    - since version 1.1 these are solved. 
-    - new projects are to advised to use poetry when possible.
-4. [dephell](https://github.com/dephell/dephell)
-    - haven't used it. But seems to handle requirements files as well as other formats.
 
 # TODOs:
 
