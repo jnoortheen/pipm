@@ -1,5 +1,5 @@
 
-**Deprecation Notice**: Since the introduction of [PEP-621](https://peps.python.org/pep-0621/), it is advised to use `pyproject.toml` to store the Project's meta-data. Here are some project supporting `PEP-621`
+**Deprecation Notice**: Since [PEP-621](https://peps.python.org/pep-0621/) is now accepted, it is advised to use `pyproject.toml` to store the Project's dependency list. Here are some projects supporting `PEP-621`
   - [pdm](https://github.com/pdm-project/pdm)
   - [pip-tools](https://github.com/jazzband/pip-tools)
   - [hatch](https://github.com/pypa/hatch)
